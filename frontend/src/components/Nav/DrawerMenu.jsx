@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import HistoryIcon from '@material-ui/icons/History';
 import SearchIcon from '@material-ui/icons/Search';
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const useStyle = makeStyles((theme) => ({
     listIcon: {
@@ -17,13 +18,13 @@ function DrawerMenu() {
 
     return (
         <div>
-            <ListItem button>
+            <ListItem button component={Link} to="/search">
                 <ListItemIcon className={classes.listIcon}>
                     <SearchIcon />
                 </ListItemIcon>
                 <ListItemText primary="Search" />
             </ListItem>
-            <ListItem button>
+            <ListItem button component={Link} to="orders">
                 <ListItemIcon className={classes.listIcon}>
                     <HistoryIcon />
                 </ListItemIcon>
