@@ -90,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Nav() {
     const classes = useStyles();
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
     const [anchorEl, setAnchorEl] = useState(null);
     const loggedIn = useSelector((state) => state.authentication.loggedIn);
     const handleDrawerOpen = () => setOpen(true);
