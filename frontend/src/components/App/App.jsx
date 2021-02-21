@@ -1,43 +1,43 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
 import { Redirect, Route, Router, Switch } from 'react-router-dom';
-import { alertActions } from '../../_actions';
 import { PrivateRoute } from '../../_components';
 import { history } from '../../_helpers';
 import { HomePage } from '../HomePage';
 import { LoginPage } from '../LoginPage';
+import { Nav } from '../Nav';
 import { RegisterPage } from '../RegisterPage';
 
+const useStyle = makeStyles((theme) => ({
+    root: {
+        display: 'flex',
+    },
+    content: {
+        flexGrow: 1,
+        height: '100vh',
+        overflow: 'auto',
+    },
+    appBarSpacer: theme.mixins.toolbar,
+}));
+
 function App() {
-    const alert = useSelector((state) => state.alert);
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        history.listen((location, action) => {
-            // clear alert on location change
-            dispatch(alertActions.clear());
-        });
-    }, []);
-
+    const classes = useStyle();
     return (
-        <div className="jumbotron">
-            <div className="container">
-                <div className="col-md-8 offset-md-2">
-                    {alert.message && (
-                        <div className={`alert ${alert.type}`}>
-                            {alert.message}
-                        </div>
-                    )}
-                    <Router history={history}>
-                        <Switch>
-                            <PrivateRoute exact path="/" component={HomePage} />
-                            <Route path="/login" component={LoginPage} />
-                            <Route path="/register" component={RegisterPage} />
-                            <Redirect from="*" to="/" />
-                        </Switch>
-                    </Router>
-                </div>
-            </div>
+        <div className={classes.root}>
+            <Router history={history}>
+                <CssBaseline />
+                <Nav />
+                <main className={classes.content}>
+                    <div className={classes.appBarSpacer} />
+                    <Switch>
+                        <Route path="/login" component={LoginPage} />
+                        <Route path="/register" component={RegisterPage} />
+                        <PrivateRoute exact path="/" component={HomePage} />
+                        <Redirect from="*" to="/" />
+                    </Switch>
+                </main>
+            </Router>
         </div>
     );
 }
