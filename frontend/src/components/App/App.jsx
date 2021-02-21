@@ -6,6 +6,7 @@ import { PrivateRoute } from '../../_components';
 import { history } from '../../_helpers';
 import { HomePage } from '../HomePage';
 import { Nav } from '../Nav';
+import { Profile } from '../Profile';
 import { SignInPage } from '../SignInPage';
 import { SignUpPage } from '../SignUpPage';
 
@@ -34,6 +35,7 @@ function App() {
                         <Route path="/signin" component={SignInPage} />
                         <Route path="/signup" component={SignUpPage} />
                         <PrivateRoute exact path="/" component={HomePage} />
+                        <PrivateRoute path="/profile" component={Profile} />
                         <Redirect from="*" to="/" />
                     </Switch>
                 </main>
