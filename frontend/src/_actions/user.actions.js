@@ -52,7 +52,7 @@ function register(user) {
         userService.register(user).then(
             (user) => {
                 dispatch(success(user));
-                history.push('/login');
+                history.push('/signin');
                 dispatch(alertActions.success('Registration successful'));
             },
             (error) => {

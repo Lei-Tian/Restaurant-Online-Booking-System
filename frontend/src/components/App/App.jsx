@@ -5,9 +5,9 @@ import { Redirect, Route, Router, Switch } from 'react-router-dom';
 import { PrivateRoute } from '../../_components';
 import { history } from '../../_helpers';
 import { HomePage } from '../HomePage';
-import { LoginPage } from '../LoginPage';
 import { Nav } from '../Nav';
-import { RegisterPage } from '../RegisterPage';
+import { SignInPage } from '../SignInPage';
+import { SignUpPage } from '../SignUpPage';
 
 const useStyle = makeStyles((theme) => ({
     root: {
@@ -31,8 +31,8 @@ function App() {
                 <main className={classes.content}>
                     <div className={classes.appBarSpacer} />
                     <Switch>
-                        <Route path="/login" component={LoginPage} />
-                        <Route path="/register" component={RegisterPage} />
+                        <Route path="/signin" component={SignInPage} />
+                        <Route path="/signup" component={SignUpPage} />
                         <PrivateRoute exact path="/" component={HomePage} />
                         <Redirect from="*" to="/" />
                     </Switch>

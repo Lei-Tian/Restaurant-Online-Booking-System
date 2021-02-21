@@ -2,6 +2,8 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import green from '@material-ui/core/colors/green';
+import red from '@material-ui/core/colors/red';
 import Container from '@material-ui/core/Container';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
@@ -40,14 +42,19 @@ const useStyles = makeStyles((theme) => ({
     register: {
         margin: theme.spacing(0, 0, 1),
     },
-    loginAlert: {
+    errorMsg: {
         padding: theme.spacing(1),
-        backgroundColor: '#ffcdd2',
-        color: '#b71c1c',
+        backgroundColor: red[50],
+        color: red[900],
+    },
+    successMsg: {
+        padding: theme.spacing(1),
+        backgroundColor: green[50],
+        color: green[900],
     },
 }));
 
-function LoginPage() {
+function SignInPage() {
     const classes = useStyles();
     const [inputs, setInputs] = useState({
         username: '',
@@ -135,7 +142,7 @@ function LoginPage() {
                     </Button>
                     <Grid container className={classes.register}>
                         <Grid item>
-                            <Link to="/register">
+                            <Link to="/signup">
                                 {"Don't have an account? Sign Up"}
                             </Link>
                         </Grid>
@@ -145,15 +152,20 @@ function LoginPage() {
                             )}
                         </Grid>
                     </Grid>
-                    {alert.message && (
-                        <div className={classes.loginAlert}>
-                            {alert.message}
-                        </div>
-                    )}
+                    {alert.message &&
+                        (alert.type === 'alert-success' ? (
+                            <div className={classes.successMsg}>
+                                {alert.message}
+                            </div>
+                        ) : (
+                            <div className={classes.errorMsg}>
+                                {alert.message}
+                            </div>
+                        ))}
                 </form>
             </div>
         </Container>
     );
 }
 
-export { LoginPage };
+export { SignInPage };
