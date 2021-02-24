@@ -2,6 +2,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
+import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -14,7 +15,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 import clsx from 'clsx';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { DrawerMenu } from './DrawerMenu';
 
 const drawerWidth = 180;
@@ -55,6 +55,7 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
     },
     drawerPaper: {
+        height: '100vh',
         position: 'relative',
         whiteSpace: 'nowrap',
         width: drawerWidth,
@@ -73,9 +74,6 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.up('sm')]: {
             width: theme.spacing(7),
         },
-    },
-    menuList: {
-        height: '100vh',
     },
     paper: {
         padding: theme.spacing(2),
@@ -155,10 +153,14 @@ function Nav() {
                             onClose={handleUserIconClose}
                         >
                             <MenuItem onClick={handleUserIconClose}>
-                                <Link to="profile">Profile</Link>
+                                <Link href="/profile" underline="none">
+                                    Profile
+                                </Link>
                             </MenuItem>
                             <MenuItem onClick={handleUserIconClose}>
-                                <Link to="signin">Logout</Link>
+                                <Link href="/signin" underline="none">
+                                    Logout
+                                </Link>
                             </MenuItem>
                         </Menu>
                     </div>

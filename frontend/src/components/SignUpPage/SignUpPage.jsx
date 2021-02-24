@@ -4,6 +4,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Container from '@material-ui/core/Container';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
@@ -11,7 +12,6 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Alert from '@material-ui/lab/Alert';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { userActions } from '../../_actions';
 
 const useStyles = makeStyles((theme) => ({
@@ -140,7 +140,7 @@ function SignUpPage() {
                     </Button>
                     <Grid container justify="flex-end">
                         <Grid item>
-                            <Link to="/signin">
+                            <Link href="/signin" underline="always">
                                 Already have an account? Sign in
                             </Link>
                         </Grid>

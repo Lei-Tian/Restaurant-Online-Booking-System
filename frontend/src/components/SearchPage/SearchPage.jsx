@@ -1,8 +1,9 @@
 import Container from '@material-ui/core/Container';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { GooglePlaceAutoComplete } from '../../_components';
+import { useSearchLocation } from './global.state';
+import { LocationSearchBox } from './LocationSearchBox';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -16,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 
 function SearchPage() {
     const classes = useStyles();
-    const [location, setLocation] = useState();
+    const [searchLocation] = useSearchLocation();
     const user = useSelector((state) => state.authentication.user);
     const dispatch = useDispatch();
 
@@ -24,7 +25,8 @@ function SearchPage() {
         <Container maxWidth="xs">
             <div className={classes.paper}>
                 <h1>Welcome to NoMoreWait!</h1>
-                <GooglePlaceAutoComplete setLocation={setLocation} />
+                <LocationSearchBox />
+                <div>{searchLocation}</div>
             </div>
         </Container>
     );

@@ -5,6 +5,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
@@ -12,7 +13,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Alert from '@material-ui/lab/Alert';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { alertActions, userActions } from '../../_actions';
 
 const useStyles = makeStyles((theme) => ({
@@ -131,7 +132,7 @@ function SignInPage() {
                     </Button>
                     <Grid container className={classes.register}>
                         <Grid item>
-                            <Link to="/signup">
+                            <Link href="/signup" underline="always">
                                 {"Don't have an account? Sign Up"}
                             </Link>
                         </Grid>
