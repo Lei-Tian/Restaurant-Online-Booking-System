@@ -80,10 +80,7 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: 'nowrap',
     },
     menuGridItem: {
-        width: drawerWidth,
-    },
-    fixedHeight: {
-        height: 240,
+        width: drawerWidth - 1,
     },
 }));
 
