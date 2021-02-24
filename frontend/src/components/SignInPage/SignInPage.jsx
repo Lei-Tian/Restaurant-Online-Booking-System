@@ -2,8 +2,6 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import green from '@material-ui/core/colors/green';
-import red from '@material-ui/core/colors/red';
 import Container from '@material-ui/core/Container';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
@@ -11,6 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import Alert from '@material-ui/lab/Alert';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
@@ -41,16 +40,6 @@ const useStyles = makeStyles((theme) => ({
     },
     register: {
         margin: theme.spacing(0, 0, 1),
-    },
-    errorMsg: {
-        padding: theme.spacing(1),
-        backgroundColor: red[50],
-        color: red[900],
-    },
-    successMsg: {
-        padding: theme.spacing(1),
-        backgroundColor: green[50],
-        color: green[900],
     },
 }));
 
@@ -154,13 +143,9 @@ function SignInPage() {
                     </Grid>
                     {alert.message &&
                         (alert.type === 'alert-success' ? (
-                            <div className={classes.successMsg}>
-                                {alert.message}
-                            </div>
+                            <Alert severity="success">{alert.message}</Alert>
                         ) : (
-                            <div className={classes.errorMsg}>
-                                {alert.message}
-                            </div>
+                            <Alert severity="error">{alert.message}</Alert>
                         ))}
                 </form>
             </div>
