@@ -1,3 +1,4 @@
+import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -17,20 +18,20 @@ function DrawerMenu() {
     const classes = useStyle();
 
     return (
-        <div>
+        <List>
             <ListItem button component={Link} to="/search">
                 <ListItemIcon className={classes.listIcon}>
                     <SearchIcon />
                 </ListItemIcon>
                 <ListItemText primary="Search" />
             </ListItem>
-            <ListItem button component={Link} to="orders">
+            <ListItem button component={Link} to="/orders">
                 <ListItemIcon className={classes.listIcon}>
                     <HistoryIcon />
                 </ListItemIcon>
                 <ListItemText primary="Orders" />
             </ListItem>
-        </div>
+        </List>
     );
 }
 

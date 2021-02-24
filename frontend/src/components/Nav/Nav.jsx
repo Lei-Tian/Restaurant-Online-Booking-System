@@ -1,9 +1,9 @@
 import AppBar from '@material-ui/core/AppBar';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
+import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
-import List from '@material-ui/core/List';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles } from '@material-ui/core/styles';
@@ -75,11 +75,12 @@ const useStyles = makeStyles((theme) => ({
             width: theme.spacing(7),
         },
     },
-    paper: {
-        padding: theme.spacing(2),
-        display: 'flex',
-        overflow: 'auto',
-        flexDirection: 'column',
+    menuGrid: {
+        flexGrow: 1,
+        flexWrap: 'nowrap',
+    },
+    menuGridItem: {
+        width: drawerWidth,
     },
     fixedHeight: {
         height: 240,
@@ -94,7 +95,6 @@ function Nav() {
     const handleDrawerOpen = () => setOpen(true);
     const handleDrawerClose = () => setOpen(false);
     const handleUserIconClose = () => setAnchorEl(null);
-    const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
     return (
         <div>
@@ -182,9 +182,25 @@ function Nav() {
                     </IconButton>
                 </div>
                 <Divider />
-                <List className={classes.menuList}>
-                    <DrawerMenu />
-                </List>
+                <Grid
+                    className={classes.menuGrid}
+                    container
+                    direction="column"
+                    alignContent="space-between"
+                >
+                    <Grid item xs={2}>
+                        <div className={classes.menuGridItem}>
+                            <DrawerMenu />
+                        </div>
+                    </Grid>
+                    <Grid item xs={8} />
+                    <Grid item xs={2}>
+                        <img
+                            src={`${process.env.PUBLIC_URL}/assets/images/stay-safe-stay-healthy.png`}
+                            style={{ width: '600%', height: '100%' }}
+                        />
+                    </Grid>
+                </Grid>
             </Drawer>
         </div>
     );

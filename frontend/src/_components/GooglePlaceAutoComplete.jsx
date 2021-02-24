@@ -98,7 +98,7 @@ function GooglePlaceAutoComplete(props) {
     return (
         <Autocomplete
             id="google-place-autocomplete"
-            style={{ width: 300 }}
+            style={{ width: 250 }}
             getOptionLabel={(option) =>
                 typeof option === 'string' ? option : option.description
             }
