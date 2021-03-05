@@ -53,7 +53,7 @@ if __name__ == '__main__':
     parser.add_argument('-i', '--input',  default='data/restaurant_table.csv', help='a csv file contains restaurant table information')
     parser.add_argument('-o', '--output', default='data/table_availability.csv', help='output file path')
     parser.add_argument('--startdate', type=date.fromisoformat, default=date.today(), help='start date of table availability, format=YYYY-MM-DD (Inclusive)')
-    parser.add_argument('--enddate', type=date.fromisoformat, default=date.today()+timedelta(days=30), help='end date of table availability, format=YYYY-MM-DD (Inclusive)')
+    parser.add_argument('--enddate', type=date.fromisoformat, default=date.today()+timedelta(days=10), help='end date of table availability, format=YYYY-MM-DD (Inclusive)')
     parser.add_argument('--hourrange', type=list, default=[(11, 13), (17, 22)], help='daily operating hour range, format=HH (Inclusive)')
     parser.add_argument('--interval', type=int, default=1, help='interval between each window in hours')
     args = parser.parse_args()
