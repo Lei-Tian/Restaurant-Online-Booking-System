@@ -23,7 +23,7 @@ id,City,State,Country
 22,Wickliffe,OH,USA
 23,Nellis AFB,NV,USA
 24,Hampstead,QC,Canada
-25,Oakland,CA,USA
+25,Oakland Old,CA,USA
 26,New Eagle,PA,USA
 27,Oakvile,ON,Canada
 28,Hudson,OH,USA
@@ -245,7 +245,7 @@ id,City,State,Country
 244,Saint-Bruno,QC,Canada
 245,Pointe-Aux-Trembles,QC,Canada
 246,North Olmsted,OH,USA
-247,Chicago,IL,USA
+247,Chicago Old,IL,USA
 248,Palgrave,ON,Canada
 249,Caledon,ON,Canada
 250,L'Île-Perrot,QC,Canada
@@ -254,7 +254,7 @@ id,City,State,Country
 253,Independence,OH,USA
 254,Pheonix AZ,AZ,USA
 255,Olmsted Township,OH,USA
-256,Oakland,PA,USA
+256,Oakland Old,PA,USA
 257,Erie,OH,USA
 258,Harwick,PA,USA
 259,Whitby,ON,Canada
@@ -406,7 +406,7 @@ id,City,State,Country
 405,Kirtland,OH,USA
 406,Belœil,QC,Canada
 407,Kleinburg,ON,Canada
-408,Omaha,NE,USA
+408,Omaha Old,NE,USA
 409,Candiac,QC,Canada
 410,Green Valley,NV,USA
 411,Calgary,MB,Canada
@@ -417,7 +417,7 @@ id,City,State,Country
 416,Harrisburg,NC,USA
 417,Cleveland Hts.,OH,USA
 418,Lancaster,SC,USA
-419,Mesa,AZ,USA
+419,Mesa Old,AZ,USA
 420,Pittsburgh,PA,USA
 421,Mentor ohio,OH,USA
 422,Cave Creek,AZ,USA
@@ -460,7 +460,7 @@ id,City,State,Country
 459,Valley View,OH,USA
 460,Waddell,AZ,USA
 461,Las  Vegas,NV,USA
-462,LAS VEGAS,NV,USA
+462,LAS VEGAS Old,NV,USA
 463,Sagamore Hills,OH,USA
 464,Lachute,QC,Canada
 465,Bedford,QC,Canada
@@ -472,7 +472,7 @@ id,City,State,Country
 471,Champlain,NY,USA
 472,Fairport Harbor,OH,USA
 473,Saint-Esprit,QC,Canada
-474,Phoenix,AZ,USA
+474,Phoenix Old,AZ,USA
 475,Westmount,QC,Canada
 476,Amherst,OH,USA
 477,Wilkins,PA,USA
@@ -525,7 +525,7 @@ id,City,State,Country
 524,Monongahela,PA,USA
 525,Vimont,QC,Canada
 526,Mc Donald,PA,USA
-527,PHOENIX,AZ,USA
+527,PHOENIX old,AZ,USA
 528,Mint  Hill,NC,USA
 529,Unionville,ON,Canada
 530,Hudson,QC,Canada
@@ -577,9 +577,9 @@ id,City,State,Country
 576,Moon Township,PA,USA
 577,Don Mills,ON,Canada
 578,Carefree,AZ,USA
-579,Las Vegas,NV,USA
+579,Las Vegas Old,NV,USA
 580,Sauk City,WI,USA
-581,MESA,AZ,USA
+581,MESA Old,AZ,USA
 582,L'Île-Bizard,QC,Canada
 583,Terrebonne,QC,Canada
 584,Midland,NC,USA
@@ -666,7 +666,7 @@ id,City,State,Country
 665,Côte Saint-Luc,QC,Canada
 666,Baldwin,PA,USA
 667,Glassport,PA,USA
-668,San Antonio,NV,USA
+668,San Antonio Old,NV,USA
 669,Avalon,PA,USA
 670,Chagrin Falls,OH,USA
 671,Maple Hts.,OH,USA
@@ -698,7 +698,7 @@ id,City,State,Country
 697,Halton Hills,ON,Canada
 698,N.Ridgeville,OH,USA
 699,Ahwatukee,AZ,USA
-700,Dallas,NC,USA
+700,Dallas Old,NC,USA
 701,Lagrange,OH,USA
 702,Rantoul,IL,USA
 703,Harrison City,PA,USA
@@ -792,7 +792,7 @@ id,City,State,Country
 791,Sedona,AZ,USA
 792,Saint-Hyacinthe,QC,Canada
 793,Beloeil,QC,Canada
-794,Charlotte,TX,USA
+794,Charlotte Old,TX,USA
 795,Sainte-Adele,QC,Canada
 796,Goodwood,ON,Canada
 797,Uxbridge,ON,Canada
@@ -836,3 +836,53 @@ id,City,State,Country
 835,Lawrenceville,PA,USA
 836,Mc Murray,PA,USA
 837,Brooklyn,OH,USA
+838,New York,NY,USA
+839,Los Angeles,CA,USA
+840,Chicago,IL,USA
+841,Houston,TX,USA
+842,Phoenix,AZ,USA
+843,Philadelphia,PA,USA
+844,San Antonio,TX,USA
+845,San Diego,CA,USA
+846,Dallas,TX,USA
+847,San Jose,CA,USA
+848,Austin,TX,USA
+849,Jacksonville,FL,USA
+850,Fort Worth,TX,USA
+851,San Francisco,CA,USA
+852,Columbus,OH,USA
+853,Charlotte,NC,USA
+854,Indianapolis,IN,USA
+855,Seattle,WA,USA
+856,Denver,CO,USA
+857,Washington,DC,USA
+858,El Paso,TX,USA
+859,Boston,MA,USA
+860,Nashville,TN,USA
+861,Portland,OR,USA
+862,Las Vegas,NV,USA
+863,Detroit,MI,USA
+864,Oklahoma City,OK,USA
+865,Memphis,TN,USA
+866,Louisville,KY,USA
+867,Baltimore,MD,USA
+868,Milwaukee,WI,USA
+869,Albuquerque,NM,USA
+870,Tucson,AZ,USA
+871,Fresno,CA,USA
+872,Sacramento,CA,USA
+873,Mesa,AZ,USA
+874,Atlanta,GA,USA
+875,Kansas City,MO,USA
+876,Colorado Springs,CO,USA
+877,Miami,FL,USA
+878,Raleigh,NC,USA
+879,Long Beach,CA,USA
+880,Virginia Beach,VA,USA
+881,Omaha,NE,USA
+882,Oakland,CA,USA
+883,Minneapolis,MN,USA
+884,Arlington,TX,USA
+885,Tampa,FL,USA
+886,Tulsa,OK,USA
+887,New Orleans,LA,USA
