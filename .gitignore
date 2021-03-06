@@ -162,3 +162,7 @@ Thumbs.db
 *.zip
 .DS_Store
 
+############
+# VSCODE #
+############
+.vscode/settings.json
