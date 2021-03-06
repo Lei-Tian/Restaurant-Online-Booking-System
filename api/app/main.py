@@ -2,16 +2,17 @@ import sys
 
 sys.path.insert(0, "../")
 import uvicorn
+from fastapi import Depends, FastAPI
+from starlette.requests import Request
+
 from app.api.api_v1.routers import route as route_v1
 from app.api.api_v1.routers.auth import auth_router
-from app.api.api_v1.routers.users import users_router
+from app.api.api_v1.routers.user import users_router
 from app.core import config
 from app.core.auth import get_current_active_user
 from app.core.celery_app import celery_app
 from app.db.session import SessionLocal
 from app.utils.view import register_router
-from fastapi import Depends, FastAPI
-from starlette.requests import Request
 
 app = FastAPI(title=config.PROJECT_NAME, docs_url="/api/docs", openapi_url="/api")
 
@@ -26,7 +27,7 @@ async def db_session_middleware(request: Request, call_next):
 
 @app.get("/api/v1")
 async def root():
-    return {"message": "Hello XiaoManager"}
+    return {"message": "Hello NoMoreWait"}
 
 
 @app.get("/api/v1/task")
