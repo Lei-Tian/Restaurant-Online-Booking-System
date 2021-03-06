@@ -16,4 +16,4 @@ class Location(Base):
     country = Column(String, nullable=False)
 
     # relationships
-    restaurants = relationship("Restaurant", back_populated="location")
+    restaurants = relationship("Restaurant", back_populates="location")

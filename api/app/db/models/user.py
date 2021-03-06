@@ -12,10 +12,10 @@ class User(Base):
     # columns
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
-    email = Column(String)
+    emails = Column(String)
     password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
     is_superuser = Column(Boolean, default=False)
 
     # relationships
-    orders = relationship("Order", back_populated="user")
+    orders = relationship("Order", back_populates="user")
