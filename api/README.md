@@ -2,7 +2,7 @@
 - To autogenerate migration script:  
 `make migration MESSAGE=<description>`
 
-- To rollforward:  
+- To migrate:  
 `make migrate`
 
 - To rollback:  
