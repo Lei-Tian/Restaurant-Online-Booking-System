@@ -1,6 +1,3 @@
-import sys
-
-sys.path.insert(0, "../")
 import uvicorn
 from fastapi import Depends, FastAPI
 from starlette.requests import Request

@@ -36,8 +36,7 @@ class Restaurant(Base):
     good_for_kids = Column(Boolean)
 
     # relationships
-    location = relationship("Location", back_populates="restaurants")
-    restaurant_tables = relationship("RestaurantTable", back_populates="restaurant")
+    location = relationship("Location", backref="restaurants")
 
     __table_args__ = (
         CheckConstraint("star >= 0 AND star <= 5", name='check_star_value'),
@@ -61,8 +60,7 @@ class RestaurantTable(Base):
     capacity = Column(Integer)
 
     # relationships
-    restaurant = relationship("Restaurant", back_populates="restaurant_tables")
-    table_availabilities = relationship("TableAvailability", back_populates="restaurant_table")
+    restaurant = relationship("Restaurant", backref="restaurant_tables")
 
     __table_args__ = (
         CheckConstraint(capacity > 0, name='check_table_capacity_value'),
@@ -88,8 +86,7 @@ class Order(Base):
     time_updated = Column(DateTime(timezone=True), onupdate=func.now())
 
     # relationships
-    user = relationship("User", back_populates="orders")
-    table_availabilities = relationship("TableAvailability", back_populates="order")
+    user = relationship("User", backref="orders")
 
     __table_args__ = (
         CheckConstraint(party_size > 0, name='check_table_party_size_value'),
@@ -108,5 +105,5 @@ class TableAvailability(Base):
     is_available = Column(Boolean)
 
     # relationships
-    restaurant_table = relationship("RestaurantTable", back_populates="table_availabilities")
-    order = relationship("Order", back_populates="table_availabilities")
+    restaurant_table = relationship("RestaurantTable", backref="table_availabilities")
+    order = relationship("Order", backref="table_availabilities")

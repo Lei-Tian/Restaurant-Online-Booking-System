@@ -12,6 +12,16 @@
             "runtimeArgs": ["start"],
             "cwd": "${workspaceFolder}/frontend",
             "console": "integratedTerminal",
-        }
+        },
+        {
+            "name": "api",
+            "type": "python",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/api",
+            "module": "uvicorn",
+            "args": [
+                "main:app", "--reload", "--port", "8000"
+            ]
+        },
     ]
 }
