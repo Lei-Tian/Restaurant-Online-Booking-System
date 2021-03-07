@@ -1,8 +1,8 @@
 """init
 
-Revision ID: 4596ca2f3448
+Revision ID: c4e532e01d13
 Revises: 
-Create Date: 2021-03-06 11:10:05.265350-08:00
+Create Date: 2021-03-06 19:49:05.368859-08:00
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '4596ca2f3448'
+revision = 'c4e532e01d13'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -56,10 +56,10 @@ def upgrade():
     sa.Column('location_id', sa.Integer(), nullable=True),
     sa.Column('name', sa.String(), nullable=False),
     sa.Column('address', sa.Text(), nullable=True),
-    sa.Column('latitude', sa.Numeric(precision=9, scale=6), nullable=True),
-    sa.Column('longitude', sa.Numeric(precision=8, scale=6), nullable=True),
+    sa.Column('latitude', sa.Float(), nullable=True),
+    sa.Column('longitude', sa.Float(), nullable=True),
     sa.Column('zip_code', sa.String(length=15), nullable=True),
-    sa.Column('cuisine', sa.String(length=30), nullable=True),
+    sa.Column('cuisine', sa.String(), nullable=True),
     sa.Column('star', sa.Float(), nullable=True),
     sa.Column('is_open', sa.Boolean(), nullable=True),
     sa.Column('good_for_kids', sa.Boolean(), nullable=True),

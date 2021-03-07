@@ -15,10 +15,11 @@ def condition():
 def execute():
     db = SessionLocal()
     Base.metadata.reflect(engine)
-    print('Dropping all...')
-    Base.metadata.drop_all(bind=engine)
-    print('Creating all...')
-    Base.metadata.create_all(bind=engine)
+    for table in reversed(Base.metadata.sorted_tables):
+        if table.name == "alembic_version": continue
+        print(f'clearing table={table}...')
+        db.execute(table.delete())
+    db.commit()
     print("Truncate complete!")
 
 

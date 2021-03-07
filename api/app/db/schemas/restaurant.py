@@ -1,18 +1,17 @@
 import typing as t
 from datetime import datetime
-from decimal import Decimal
 
 from pydantic import BaseModel
 
-from app.db.models.restaurant import RestaurantTableType, OrderStatus
+from app.db.models.restaurant import OrderStatus, RestaurantTableType
 
 
 class RestaurantBase(BaseModel):
     location_id: int
     name: str
     address: str
-    latitude: Decimal
-    longitude: Decimal
+    latitude: float
+    longitude: float
     zip_code: str
     cuisine: str
     star: float

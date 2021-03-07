@@ -9,7 +9,6 @@ from sqlalchemy.sql.sqltypes import (
     Enum,
     Float,
     Integer,
-    Numeric,
     String,
     Text,
 )
@@ -27,10 +26,10 @@ class Restaurant(Base):
     location_id = Column(Integer, ForeignKey("location.id", ondelete="SET NULL"))
     name = Column(String, nullable=False)
     address = Column(Text)
-    latitude = Column(Numeric(9, 6))
-    longitude = Column(Numeric(8, 6))
+    latitude = Column(Float)
+    longitude = Column(Float)
     zip_code = Column(String(15))
-    cuisine = Column(String(30))
+    cuisine = Column(String)
     star = Column(Float)
     is_open = Column(Boolean)
     good_for_kids = Column(Boolean)
