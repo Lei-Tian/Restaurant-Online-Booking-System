@@ -19,6 +19,7 @@ def execute():
         if table.name == "alembic_version": continue
         print(f'clearing table={table}...')
         db.execute(table.delete())
+        print(f"table={table} is complete")
     db.commit()
     print("Truncate complete!")
 

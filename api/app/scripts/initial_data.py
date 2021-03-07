@@ -105,7 +105,7 @@ def init():
         load_location,
         load_restaurant,
         load_restaurant_table,
-        load_table_availability,
+        # load_table_availability,
     ]:
         logger.info(f"executing {executor.__name__}...")
         executor()
