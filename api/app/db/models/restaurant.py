@@ -55,6 +55,7 @@ class RestaurantTable(Base):
     # columns
     id = Column(Integer, primary_key=True, index=True)
     restaurant_id = Column(Integer, ForeignKey("restaurant.id", ondelete="CASCADE"))
+    name = Column(String)
     type = Column(Enum(RestaurantTableType))
     capacity = Column(Integer)
 

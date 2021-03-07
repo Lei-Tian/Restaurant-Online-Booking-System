@@ -9,7 +9,12 @@ from functools import wraps
 
 from app.db.crud.user import create_user
 from app.db.models.location import Location
-from app.db.models.restaurant import Restaurant, RestaurantTable, TableAvailability
+from app.db.models.restaurant import (
+    Restaurant,
+    RestaurantTable,
+    RestaurantTableType,
+    TableAvailability,
+)
 from app.db.schemas.user import UserCreate
 from app.db.session import SessionLocal
 
@@ -35,9 +40,8 @@ def load_data_from_file(filename):
             yield i, row
 
 
-def bulk_insert(db, cls, filename, row_processor=None):
+def bulk_insert(db, cls, filename, row_processor=None, batch=10000):
     rows = []
-    batch = 10000
     for index, row in load_data_from_file(filename):
         if row_processor: row = row_processor(row)
         rows.append(row)
@@ -80,14 +84,19 @@ def load_restaurant(db):
 
 @db_session
 def load_restaurant_table(db):
-    #TODO:
-    pass
+    def row_processor(row):
+        row['type'] = RestaurantTableType(row['type'])
+        return row
+    bulk_insert(db, RestaurantTable, 'restaurant_table_onlyopen.csv', row_processor=row_processor)
 
 
 @db_session
 def load_table_availability(db):
-    #TODO:
-    pass
+    def row_processor(row):
+        row['is_available'] = True
+        row['order_id'] = None
+        return row
+    bulk_insert(db, TableAvailability, 'table_availability.csv', row_processor=row_processor, batch=100000)
 
 
 def init():

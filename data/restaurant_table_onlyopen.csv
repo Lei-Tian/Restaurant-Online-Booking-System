@@ -1,4 +1,4 @@
-restaurant_id,table_name,table_capacity,table_type,table_id
+restaurant_id,name,capacity,type,id
 1,1GEN01,8,GENERAL,1
 1,1GEN02,8,GENERAL,2
 1,1GEN03,8,GENERAL,3
