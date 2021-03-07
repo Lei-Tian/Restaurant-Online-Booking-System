@@ -12,18 +12,21 @@ export const userService = {
 };
 
 function login(username, password) {
+    const formBody = `username=${username}&password=${password}&grant_type=&scope=&client_id=&client_secret=`;
     const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+        body: formBody,
     };
 
-    return fetch(`${Config.apiUrl}/users/authenticate`, requestOptions)
+    return fetch(`${Config.apiUrl}/token`, requestOptions)
         .then(handleResponse)
-        .then((user) => {
+        .then((data) => {
+            const user = { username, token: data.access_token };
             // store user details and jwt token in local storage to keep user logged in between page refreshes
             localStorage.setItem('user', JSON.stringify(user));
-
             return user;
         });
 }
@@ -39,7 +42,7 @@ function getAll() {
         headers: authHeader(),
     };
 
-    return fetch(`${Config.apiUrl}/users`, requestOptions).then(handleResponse);
+    return fetch(`${Config.apiV1Url}/users`, requestOptions).then(handleResponse);
 }
 
 function getById(id) {
@@ -48,19 +51,22 @@ function getById(id) {
         headers: authHeader(),
     };
 
-    return fetch(`${Config.apiUrl}/users/${id}`, requestOptions).then(
+    return fetch(`${Config.apiV1Url}/users/${id}`, requestOptions).then(
         handleResponse,
     );
 }
 
 function register(user) {
+    const formBody = `username=${user.username}&password=${user.password}`;
     const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(user),
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        },
+        body: formBody,
     };
 
-    return fetch(`${Config.apiUrl}/users/register`, requestOptions).then(
+    return fetch(`${Config.apiUrl}/signup`, requestOptions).then(
         handleResponse,
     );
 }
@@ -75,7 +81,7 @@ function update(user) {
         body: JSON.stringify(user),
     };
 
-    return fetch(`${Config.apiUrl}/users/${user.id}`, requestOptions).then(
+    return fetch(`${Config.apiV1Url}/users/${user.id}`, requestOptions).then(
         handleResponse,
     );
 }
@@ -87,7 +93,7 @@ function _delete(id) {
         headers: authHeader(),
     };
 
-    return fetch(`${Config.apiUrl}/users/${id}`, requestOptions).then(
+    return fetch(`${Config.apiV1Url}/users/${id}`, requestOptions).then(
         handleResponse,
     );
 }

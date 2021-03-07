@@ -3,10 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { App } from './components/App';
 import reportWebVitals from './reportWebVitals';
-import { configureFakeBackend, store } from './_helpers';
-
-// TODO: remove this when backend is ready
-configureFakeBackend();
+import { store } from './_helpers';
 
 ReactDOM.render(
     <React.StrictMode>

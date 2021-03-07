@@ -4,8 +4,12 @@ module.exports = function override(config, env) {
         Config: JSON.stringify({
             apiUrl:
                 env === 'production'
-                    ? 'http://myservice:8000'
-                    : 'http://localhost:3000',
+                    ? 'http://localhost:9000/api'
+                    : 'http://localhost:9000/api',
+            apiV1Url:
+                env === 'production'
+                    ? 'http://localhost:9000/api/v1'
+                    : 'http://localhost:9000/api/v1',
         }),
     };
     return config;
