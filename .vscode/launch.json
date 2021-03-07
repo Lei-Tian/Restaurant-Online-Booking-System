@@ -20,7 +20,7 @@
             "cwd": "${workspaceFolder}/api",
             "module": "uvicorn",
             "args": [
-                "main:app", "--reload", "--port", "8000"
+                "main:app", "--reload", "--port", "9000"
             ]
         },
     ]

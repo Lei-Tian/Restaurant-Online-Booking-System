@@ -14,3 +14,7 @@
 - To autogenerate migration script: `make migration MESSAGE=<description>`
 - To migrate: `make migrate`
 - To rollback: `make rollback`
+
+## REST API Dev Mode
+
+- Start server: `uvicorn main:app --reload --port 9000`

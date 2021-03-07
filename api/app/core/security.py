@@ -25,10 +25,10 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 SECRET_KEY = os.getenv(
     "SECRET_KEY",
-    "52c1e294c030b587ca2f35f273541bc3409b0408c0f3d0ec7876c469a2042af4",
+    "c3d9914e58b42bc9e30a81abe7d56f349fe58ec5a101d69ac067019eb0f82b17",
 )
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 365
 
 
 def get_password_hash(password: str) -> str:
@@ -87,7 +87,7 @@ class AuthDependency:
         if token is None:
             self.raise_unauthorized_exception(authenticate_value)
         try:
-            payload = jwt.decode(token, security.SECRET_KEY, algorithm=[security.ALGORITHM])
+            payload = jwt.decode(token, security.SECRET_KEY, algorithms=[security.ALGORITHM])
         except (jwt.PyJWTError, jwt.ExpiredSignatureError):
             self.raise_unauthorized_exception(authenticate_value)
         username: str = payload.get("sub")

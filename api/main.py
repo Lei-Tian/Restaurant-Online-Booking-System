@@ -45,4 +45,4 @@ register_router(app, "v1", [*route_v1.route])
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", reload=True, port=8000)
+    uvicorn.run("main:app", host="0.0.0.0", reload=True, port=9000)
