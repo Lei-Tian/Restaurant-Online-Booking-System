@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 
 from app.api.api_v1.routers import route as route_v1
@@ -12,6 +13,14 @@ from app.db.session import SessionLocal
 from app.utils.view import register_router
 
 app = FastAPI(title=config.PROJECT_NAME, docs_url="/api/docs", openapi_url="/api")
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.middleware("http")
