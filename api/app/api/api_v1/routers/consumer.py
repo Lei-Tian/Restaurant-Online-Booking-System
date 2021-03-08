@@ -14,7 +14,7 @@ consumer_router = r = APIRouter()
 
 
 @r.post("/search", response_model=t.List[SearchedAvailableRestaurant])
-async def user_create(
+async def search_restaurant_tables(
     request: Request,
     search_in: SearchIn,
     db=Depends(get_db),
@@ -27,7 +27,7 @@ async def user_create(
 
   
 @r.post("/select-table", response_model=t.Union[SelectTableSuccessOut, SelectTableFailOut])
-async def user_create(
+async def select_table(
     request: Request,
     select_table_in: SelectTableIn,
     db=Depends(get_db),
@@ -40,7 +40,7 @@ async def user_create(
   
   
  @r.post("/order", response_model=t.Union[OrderSuccessOut, OrderFailOut])
-async def user_create(
+async def confirm_order(
     request: Request,
     select_table_in: OrderIn,
     db=Depends(get_db),
