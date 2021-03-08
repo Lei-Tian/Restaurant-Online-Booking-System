@@ -1,3 +1,6 @@
+
+from pathlib import Path
+
 import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,17 +13,27 @@ from app.core import config
 from app.core.auth import get_current_active_user
 from app.core.celery_app import celery_app
 from app.db.session import SessionLocal
+from app.utils.logger import CustomizeLogger
 from app.utils.view import register_router
 
-app = FastAPI(title=config.PROJECT_NAME, docs_url="/api/docs", openapi_url="/api")
-origins = ["*"]
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+config_path=Path(__file__).with_name("logging_config.json")
+
+def create_app() -> FastAPI:
+    app = FastAPI(title=config.PROJECT_NAME, docs_url="/api/docs", openapi_url="/api")
+    origins = ["*"]
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    ) 
+    # set app logger
+    app.logger = CustomizeLogger.make_logger(config_path)
+    return app
+
+
+app = create_app()
 
 
 @app.middleware("http")
@@ -32,7 +45,8 @@ async def db_session_middleware(request: Request, call_next):
 
 
 @app.get("/api/v1")
-async def root():
+async def root(request: Request):
+    request.app.logger.info("hello nomorewait")
     return {"message": "Hello NoMoreWait"}
 
 
