@@ -1,5 +1,5 @@
 import app.db.models.location as location_model
-import app.db.schemas.location as location_schema
+import app.api.api_v1.schemas.location as location_schema
 from app.utils.view import ModelViewSet
 
 

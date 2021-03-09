@@ -4,8 +4,8 @@ import typing as t
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser, get_current_active_user
-from app.db.crud.user import create_user, delete_user, edit_user, get_user, get_users
-from app.db.schemas.user import User, UserCreate, UserEdit
+from app.api.api_v1.crud.user import create_user, delete_user, edit_user, get_user, get_users
+from app.api.api_v1.schemas.user import User, UserCreate, UserEdit
 from app.db.session import get_db
 
 users_router = r = APIRouter()

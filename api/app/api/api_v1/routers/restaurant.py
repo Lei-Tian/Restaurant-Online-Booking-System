@@ -1,5 +1,5 @@
 import app.db.models.restaurant as restaurant_model
-import app.db.schemas.restaurant as restaurant_schema
+import app.api.api_v1.schemas.restaurant as restaurant_schema
 from app.utils.view import ModelViewSet
 
 

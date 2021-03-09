@@ -7,7 +7,7 @@ import csv
 import logging
 from functools import wraps
 
-from app.db.crud.user import create_user
+from app.api.api_v1.crud.user import create_user
 from app.db.models.location import Location
 from app.db.models.restaurant import (
     Restaurant,
@@ -15,7 +15,7 @@ from app.db.models.restaurant import (
     RestaurantTableType,
     TableAvailability,
 )
-from app.db.schemas.user import UserCreate
+from app.api.api_v1.schemas.user import UserCreate
 from app.db.session import SessionLocal
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(name)s %(levelname)s:%(message)s')

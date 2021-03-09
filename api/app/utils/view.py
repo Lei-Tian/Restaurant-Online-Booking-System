@@ -1,8 +1,8 @@
 import typing as t
 
-import app.db.crud.utils as crud_utils
+import app.api.api_v1.crud.utils as crud_utils
 from app.core.security import AuthDependency
-from app.db.schemas import user as user_schema
+from app.api.api_v1.schemas import user as user_schema
 from app.db.session import Base, get_db
 from fastapi import APIRouter, FastAPI, Security
 from fastapi.params import Depends

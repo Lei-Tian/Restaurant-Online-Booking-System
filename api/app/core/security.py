@@ -75,7 +75,7 @@ class AuthDependency:
         security_scopes: SecurityScopes,
         db=Depends(session.get_db),
     ):
-        from app.db.crud.user import get_user_by_username
+        from app.api.api_v1.crud.user import get_user_by_username
 
         if not self.enabled:
             return None

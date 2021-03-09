@@ -4,7 +4,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 import app.db.models.user as user_model
-import app.db.schemas.user as user_schema
+import app.api.api_v1.schemas.user as user_schema
 from app.core.security import get_password_hash
 
 
