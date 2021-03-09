@@ -2,6 +2,7 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import DemoColor from '@material-ui/core/colors/green';
 import Container from '@material-ui/core/Container';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
@@ -19,11 +20,18 @@ import { alertActions, userActions } from '../../_actions';
 const useStyles = makeStyles((theme) => ({
     paper: {
         marginTop: theme.spacing(8),
-        padding: theme.spacing(4, 4, 3),
+        padding: theme.spacing(0, 4, 3),
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         backgroundColor: 'white',
+    },
+    topSpace: {
+        paddingTop: theme.spacing(4),
+    },
+    demo: {
+        color: DemoColor['A700'],
+        fontWeight: 500,
     },
     avatar: {
         margin: theme.spacing(1),
@@ -47,8 +55,8 @@ const useStyles = makeStyles((theme) => ({
 function SignInPage() {
     const classes = useStyles();
     const [inputs, setInputs] = useState({
-        username: '',
-        password: '',
+        username: 'demo',
+        password: 'demo',
     });
     const { username, password } = inputs;
     const loggingIn = useSelector((state) => state.authentication.loggingIn);
@@ -83,6 +91,11 @@ function SignInPage() {
     return (
         <Container maxWidth="xs">
             <div className={classes.paper}>
+                {username === 'demo' && (
+                    <p className={classes.demo}>
+                        demo account has been filled in, feel free to sign in!
+                    </p>
+                )}
                 <Avatar className={classes.avatar}>
                     <LockOutlinedIcon />
                 </Avatar>
@@ -102,6 +115,7 @@ function SignInPage() {
                         id="username"
                         label="Username"
                         name="username"
+                        value={username}
                         autoFocus
                         onChange={handleChange}
                     />
@@ -110,8 +124,9 @@ function SignInPage() {
                         margin="normal"
                         required
                         fullWidth
-                        name="password"
                         label="Password"
+                        name="password"
+                        value={password}
                         type="password"
                         id="password"
                         autoComplete="current-password"

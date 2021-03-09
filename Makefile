@@ -2,7 +2,7 @@ build_web:
 	cd frontend/ && yarn build
 
 start_web:
-	cd frontend/ && serve -s build -n &
+	cd frontend/ && yarn build && serve -s build -n &
 
 stop_web:
 	ps -ef | grep serve | grep build | awk '{print $$2}' | xargs kill
