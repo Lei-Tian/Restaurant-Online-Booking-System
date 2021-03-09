@@ -26,6 +26,7 @@ class RestaurantItem(RestaurantBase):
 
 class RestaurantTableBase(BaseModel):
     restaurant_id: int
+    name: str
     type: RestaurantTableType
     capacity: int
 
@@ -37,8 +38,11 @@ class RestaurantTableItem(RestaurantTableBase):
 
 class OrderBase(BaseModel):
     user_id: int
+    ref_id: str
     status: OrderStatus
     party_size: int
+    time_created: datetime
+    time_updated: datetime
 
 
 class OrderItem(BaseModel):

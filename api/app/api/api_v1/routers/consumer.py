@@ -1,24 +1,17 @@
 import typing as t
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Request
 
-from app.api.api_v1.schemas.consumer import (
-    OrderFailOut,
-    OrderIn,
-    OrderSuccessOut,
-    SearchedAvailableRestaurant,
-    SearchIn,
-    SelectTableFailOut,
-    SelectTableIn,
-    SelectTableSuccessOut,
-)
+from app.api.api_v1.crud import consumer
+from app.api.api_v1.schemas.consumer import OrderIn, SearchIn, SearchOut, SelectTableIn
+from app.api.api_v1.schemas.restaurants import OrderItem
 from app.core.auth import get_current_active_user
 from app.db.session import get_db
 
 consumer_router = r = APIRouter()
 
 
-@r.post("/search", response_model=t.List[SearchedAvailableRestaurant])
+@r.post("/search", response_model=t.List[SearchOut])
 async def search_restaurant_tables(
     request: Request,
     search_in: SearchIn,
@@ -28,10 +21,10 @@ async def search_restaurant_tables(
     """
     Find all available restaurants and their available windows
     """
-    return []
+    return consumer.search_restaurant_tables(search_in)
 
 
-@r.post("/select-table", response_model=t.Union[SelectTableSuccessOut, SelectTableFailOut])
+@r.post("/select-table", response_model=OrderItem)
 async def select_table(
     request: Request,
     select_table_in: SelectTableIn,
@@ -41,17 +34,17 @@ async def select_table(
     """
     Select a table
     """
-    return
+    return consumer.select_table(select_table_in)
 
 
-@r.post("/order", response_model=t.Union[OrderSuccessOut, OrderFailOut])
+@r.post("/order", response_model=OrderItem)
 async def confirm_order(
     request: Request,
-    select_table_in: OrderIn,
+    order_in: OrderIn,
     db=Depends(get_db),
     current_user=Depends(get_current_active_user),
 ):
     """
     Confirm an order
     """
-    return
+    return consumer.confirm_order(order_in)
