@@ -4,6 +4,9 @@ from pathlib import Path
 import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from starlette.requests import Request
 
 from app.api.api_v1.routers import route as route_v1
@@ -19,7 +22,7 @@ from app.utils.view import register_router
 
 config_path=Path(__file__).with_name("logging_config.json")
 
-def create_app() -> FastAPI:
+def create_app(serve_static: bool = False) -> FastAPI:
     app = FastAPI(title=config.PROJECT_NAME, docs_url="/api/docs", openapi_url="/api")
     origins = ["*"]
     app.add_middleware(
@@ -31,10 +34,21 @@ def create_app() -> FastAPI:
     ) 
     # set app logger
     app.logger = CustomizeLogger.make_logger(config_path)
+    # serve static files
+    if serve_static: serve_static_files(app)
     return app
 
 
-app = create_app()
+def serve_static_files(app):
+    app.mount("/static", StaticFiles(directory='public/static'), name="static")
+    app.mount("/assets", StaticFiles(directory='public/assets'), name="assets")
+    templates = Jinja2Templates(directory='public')
+    @app.get("/{catchall:path}", response_class=HTMLResponse)
+    def index(request: Request):
+        return templates.TemplateResponse("index.html", {"request": request})
+
+
+app = create_app(serve_static=True)
 
 
 @app.middleware("http")

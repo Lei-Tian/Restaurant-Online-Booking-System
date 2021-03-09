@@ -1,5 +1,5 @@
-build_web:
-	cd frontend/ && yarn build
+publish_web:
+	cd frontend/ && yarn build && rm -rf ../api/public && mv build ../api/public
 
 start_web:
 	cd frontend/ && yarn build && serve -s build -n &
