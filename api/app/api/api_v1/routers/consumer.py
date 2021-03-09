@@ -4,9 +4,7 @@ from fastapi import APIRouter, Depends, Request
 
 from app.api.api_v1.crud import consumer
 from app.api.api_v1.schemas.consumer import OrderIn, SearchIn, SearchOut, SelectTableIn
-from app.api.api_v1.schemas.restaurants import OrderItem
-from app.core.auth import get_current_active_user
-from app.db.session import get_db
+from app.api.api_v1.schemas.restaurant import OrderItem
 
 consumer_router = r = APIRouter()
 
@@ -15,8 +13,6 @@ consumer_router = r = APIRouter()
 async def search_restaurant_tables(
     request: Request,
     search_in: SearchIn,
-    db=Depends(get_db),
-    current_user=Depends(get_current_active_user),
 ):
     """
     Find all available restaurants and their available windows
@@ -28,8 +24,6 @@ async def search_restaurant_tables(
 async def select_table(
     request: Request,
     select_table_in: SelectTableIn,
-    db=Depends(get_db),
-    current_user=Depends(get_current_active_user),
 ):
     """
     Select a table
@@ -41,8 +35,6 @@ async def select_table(
 async def confirm_order(
     request: Request,
     order_in: OrderIn,
-    db=Depends(get_db),
-    current_user=Depends(get_current_active_user),
 ):
     """
     Confirm an order

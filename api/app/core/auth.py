@@ -1,11 +1,11 @@
 import jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 
-import app.db.models.user as user_model
 import app.api.api_v1.schemas.user as user_schema
+import app.db.models.user as user_model
+from app.api.api_v1.crud.user import create_user, get_user_by_username
 from app.core import security
 from app.db import session
-from app.api.api_v1.crud.user import create_user, get_user_by_username
 
 
 async def get_current_user(db=Depends(session.get_db), token: str = Depends(security.oauth2_scheme)):
@@ -30,10 +30,12 @@ async def get_current_user(db=Depends(session.get_db), token: str = Depends(secu
 
 
 async def get_current_active_user(
+    request: Request,
     current_user: user_model.User = Depends(get_current_user),
 ):
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
+    request.state.current_active_user = current_user
     return current_user
 
 

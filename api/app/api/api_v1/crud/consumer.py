@@ -1,5 +1,5 @@
 from app.api.api_v1.schemas.consumer import OrderIn, SearchIn, SearchOut, SelectTableIn
-from app.api.api_v1.schemas.restaurants import OrderItem
+from app.api.api_v1.schemas.restaurant import OrderItem
 
 
 def search_restaurant_tables(search_params: SearchIn) -> SearchOut:

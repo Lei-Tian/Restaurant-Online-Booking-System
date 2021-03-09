@@ -1,12 +1,13 @@
 import typing as t
 
-import app.api.utils.crud as crud_utils
-from app.core.security import AuthDependency
-from app.api.api_v1.schemas import user as user_schema
-from app.db.session import Base, get_db
 from fastapi import APIRouter, FastAPI, Security
 from fastapi.params import Depends
 from pydantic import BaseModel
+
+import app.utils.crud as crud_utils
+from app.api.api_v1.schemas import user as user_schema
+from app.core.security import AuthDependency
+from app.db.session import Base, get_db
 
 
 class ModelViewSet:
