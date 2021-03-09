@@ -48,7 +48,7 @@ def serve_static_files(app):
         return templates.TemplateResponse("index.html", {"request": request})
 
 
-app = create_app(serve_static=True)
+app = create_app()
 
 
 @app.middleware("http")
