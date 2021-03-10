@@ -8,6 +8,7 @@ import logging
 from functools import wraps
 
 from app.api.api_v1.crud.user import create_user
+from app.api.api_v1.schemas.user import UserCreate
 from app.db.models.location import Location
 from app.db.models.restaurant import (
     Restaurant,
@@ -15,11 +16,15 @@ from app.db.models.restaurant import (
     RestaurantTableType,
     TableAvailability,
 )
-from app.api.api_v1.schemas.user import UserCreate
 from app.db.session import SessionLocal
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(name)s %(levelname)s:%(message)s')
 logger = logging.getLogger(__file__)
+
+
+def bulk_insert_mappings(db, cls, rows):
+    #TODO: this may be overridden using raw sql
+    db.bulk_insert_mappings(cls, rows)
 
 
 def db_session(executor):
@@ -46,11 +51,11 @@ def bulk_insert(db, cls, filename, row_processor=None, batch=10000):
         if row_processor: row = row_processor(row)
         rows.append(row)
         if index % batch == 0:
-            db.bulk_insert_mappings(cls, rows)
+            bulk_insert_mappings(db, cls, rows)
             db.commit()
             rows.clear()
             logger.debug(f"{filename}: {index} rows have been committed")
-    db.bulk_insert_mappings(cls, rows)
+    bulk_insert_mappings(db, cls, rows)
     db.commit()
 
 
