@@ -4,11 +4,11 @@ module.exports = function override(config, env) {
         Config: JSON.stringify({
             apiUrl:
                 env === 'production'
-                    ? 'http://localhost:9000/api'
+                    ? 'http://sp21-cs411-17.cs.illinois.edu/api/'
                     : 'http://localhost:9000/api',
             apiV1Url:
                 env === 'production'
-                    ? 'http://localhost:9000/api/v1'
+                    ? 'http://sp21-cs411-17.cs.illinois.edu/api/v1'
                     : 'http://localhost:9000/api/v1',
         }),
     };
