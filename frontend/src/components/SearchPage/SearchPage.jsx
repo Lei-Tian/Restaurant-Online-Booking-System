@@ -10,6 +10,7 @@ import {
 import 'date-fns';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { LocationWordCloud } from '../charts';
 import { useSearchLocation } from './global.state';
 import { LocationSearchBox } from './LocationSearchBox';
 
@@ -39,6 +40,9 @@ function SearchPage() {
     return (
         <Container maxWidth="md" className={classes.root}>
             <h1>Welcome to NoMoreWait!</h1>
+            <div>
+                <LocationWordCloud />
+            </div>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <Grid container justify="space-around">
                     <Grid item>
