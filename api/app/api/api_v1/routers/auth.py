@@ -8,7 +8,7 @@ from app.core import security
 from app.core.auth import authenticate_user, sign_up_new_user
 from app.db.session import get_db
 
-auth_router = r = APIRouter()
+auth_router = r = APIRouter(tags=["auth"])
 
 
 def create_user_token(user: user_model.User):

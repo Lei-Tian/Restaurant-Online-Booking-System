@@ -1,6 +1,13 @@
 import typing as t
 from datetime import datetime
+
 from pydantic import BaseModel
+
+from app.api.api_v1.schemas.location import LocationBase
+
+
+class LocationRestaurantCount(LocationBase):
+    restaurant_count: int
 
 
 class OrderIn(BaseModel):

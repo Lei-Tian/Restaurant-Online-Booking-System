@@ -78,13 +78,8 @@ app.include_router(
     tags=["users"],
     dependencies=[Depends(get_db), Depends(get_current_active_user)],
 )
-app.include_router(auth_router, prefix="/api", tags=["auth"])
-app.include_router(
-    consumer_router,
-    prefix="/api/v1/consumer",
-    tags=["consumer"],
-    dependencies=[Depends(get_db), Depends(get_current_active_user)],
-)
+app.include_router(auth_router, prefix="/api")
+app.include_router(consumer_router, prefix="/api")
 register_router(app, "v1", [*route_v1.route])
 
 

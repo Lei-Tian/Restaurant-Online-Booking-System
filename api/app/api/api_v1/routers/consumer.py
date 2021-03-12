@@ -1,12 +1,32 @@
 import typing as t
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 
 from app.api.api_v1.crud import consumer
-from app.api.api_v1.schemas.consumer import OrderIn, SearchIn, SearchOut, SelectTableIn
+from app.api.api_v1.schemas.consumer import (
+    LocationRestaurantCount,
+    OrderIn,
+    SearchIn,
+    SearchOut,
+    SelectTableIn,
+)
 from app.api.api_v1.schemas.restaurant import OrderItem
+from app.core.auth import get_current_active_user
+from app.db.session import get_db
 
-consumer_router = r = APIRouter()
+consumer_router = r = APIRouter(
+    prefix='/v1/consumer',
+    tags=['consumer'],
+    dependencies=[Depends(get_db), Depends(get_current_active_user)]
+)
+
+
+@r.get("/location-restaurants-count", response_model=t.List[LocationRestaurantCount])
+async def location_restaurants_count(request: Request):
+    """
+    Find all locations and their restaurants count
+    """
+    return consumer.get_location_restaurants_count(request.state.current_active_user, request.state.db)
 
 
 @r.post("/search", response_model=t.List[SearchOut])
