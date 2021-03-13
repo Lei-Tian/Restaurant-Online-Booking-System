@@ -13,7 +13,6 @@ from app.db.models.location import Location
 from app.db.models.restaurant import (
     Restaurant,
     RestaurantTable,
-    RestaurantTableType,
     TableAvailability,
 )
 from app.db.session import SessionLocal
@@ -23,26 +22,10 @@ logger = logging.getLogger(__file__)
 
 
 def bulk_insert_mappings(db, cls, rows):
-    #TODO: this may be overridden using raw sql
-    # logger.info(f"executingadadf {cls.__tablename__}...")
-    
-    SQL = ' '
-    if cls.__tablename__ == "location" :
-        SQL = 'INSERT INTO location (id,city, state, country) VALUES (:id, :city, :state, :country)'
-        db.execute(SQL, rows)
-        
-    elif cls.__tablename__ == "restaurant" :
-        SQL = "INSERT INTO restaurant (id,location_id, name, address, latitude,longitude,zip_code,cuisine,star,is_open,good_for_kids) VALUES (:id, :location_id, :name, :address, :latitude,:longitude,:zip_code,:cuisine,:star,:is_open,:good_for_kids)"
-        db.execute(SQL, rows)
-        
-    elif cls.__tablename__ == "restaurant_table" :
-        # print(rows[0]['type'])
-        SQL = "INSERT INTO restaurant_table (id, restaurant_id, name, type, capacity) VALUES (:id, :restaurant_id, :name, :type, :capacity)"
-        db.execute(SQL, rows)
-        
-    elif cls.__tablename__ == "table_availability" :
-        SQL = "INSERT INTO table_availability (restaurant_table_id, order_id, booking_time, is_available) VALUES (:restaurant_table_id, :order_id, :booking_time, :is_available)"
-        db.execute(SQL, rows)   
+    '''raw sql execution'''
+    column_names = cls.__table__.columns.keys()
+    SQL = f"INSERT INTO {cls.__tablename__} ({', '.join(column_names)}) VALUES ({', '.join(map(lambda x: f':{x}', column_names))})"
+    db.execute(SQL, rows)
 
 
 def db_session(executor):
