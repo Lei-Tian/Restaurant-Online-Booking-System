@@ -24,10 +24,29 @@ logger = logging.getLogger(__file__)
 
 def bulk_insert_mappings(db, cls, rows):
     #TODO: this may be overridden using raw sql
-    db.bulk_insert_mappings(cls, rows)
+    # logger.info(f"executingadadf {cls.__tablename__}...")
+    
+    SQL = ' '
+    if cls.__tablename__ == "location" :
+        SQL = 'INSERT INTO location (id,city, state, country) VALUES (:id, :city, :state, :country)'
+        db.execute(SQL, rows)
+        
+    elif cls.__tablename__ == "restaurant" :
+        SQL = "INSERT INTO restaurant (id,location_id, name, address, latitude,longitude,zip_code,cuisine,star,is_open,good_for_kids) VALUES (:id, :location_id, :name, :address, :latitude,:longitude,:zip_code,:cuisine,:star,:is_open,:good_for_kids)"
+        db.execute(SQL, rows)
+        
+    elif cls.__tablename__ == "restaurant_table" :
+        # print(rows[0]['type'])
+        SQL = "INSERT INTO restaurant_table (id, restaurant_id, name, type, capacity) VALUES (:id, :restaurant_id, :name, :type, :capacity)"
+        db.execute(SQL, rows)
+        
+    elif cls.__tablename__ == "table_availability" :
+        SQL = "INSERT INTO table_availability (restaurant_table_id, order_id, booking_time, is_available) VALUES (:restaurant_table_id, :order_id, :booking_time, :is_available)"
+        db.execute(SQL, rows)   
 
 
 def db_session(executor):
+    # print("executor")
     @wraps(executor)
     def wrapper():
         db = SessionLocal()
@@ -39,7 +58,7 @@ def db_session(executor):
 
 
 def load_data_from_file(filename):
-    with open(f'../data/{filename}') as f:
+    with open(f'../data/{filename}',encoding="utf8") as f:
         reader = csv.DictReader(f)
         for i, row in enumerate(reader, start=1):
             yield i, row
@@ -61,6 +80,8 @@ def bulk_insert(db, cls, filename, row_processor=None, batch=10000):
 
 @db_session
 def load_user(db):
+    print("iput user demo")
+    
     create_user(
         db,
         UserCreate(
@@ -71,7 +92,7 @@ def load_user(db):
             is_superuser=True,
         ),
     )
-
+    
 
 @db_session
 def load_location(db):
@@ -90,7 +111,8 @@ def load_restaurant(db):
 @db_session
 def load_restaurant_table(db):
     def row_processor(row):
-        row['type'] = RestaurantTableType(row['type'])
+        # row['type'] = RestaurantTableType(row['type'])
+        row['type'] = row['type'].lower()
         return row
     bulk_insert(db, RestaurantTable, 'restaurant_table_onlyopen.csv', row_processor=row_processor)
 
@@ -105,6 +127,7 @@ def load_table_availability(db):
 
 
 def init():
+    # print("adfasf")
     for executor in [
         load_user,
         load_location,
