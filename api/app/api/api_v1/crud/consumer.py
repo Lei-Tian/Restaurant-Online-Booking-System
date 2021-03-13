@@ -14,8 +14,13 @@ from app.db.models.user import User
 
 
 def get_location_restaurants_count(current_user: User, db: Session) -> t.List[LocationRestaurantCount]:
-    ret_proxy = db.execute("select * from restaurant")
-    return []
+    result = []
+    sql = "SELECT COUNT(location_id), city, state, country FROM location, restaurant where restaurant.location_id = location.id GROUP BY location_id, city, state, country"
+    ret_proxy = db.execute(sql)
+    for count, city, state, country in ret_proxy.fetchall():
+        result.append(LocationRestaurantCount(restaurant_count=count, city=city, state=state, country=country))
+    return result
+
 
 def search_restaurant_tables(current_user: User, db: Session, current_usersearch_params: SearchIn) -> t.List[SearchOut]:
     pass
