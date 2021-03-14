@@ -4,16 +4,23 @@ import { axios_instance } from '../../_helpers';
 
 function LocationWordCloud() {
     const [locations, setLocations] = useState([]);
+    const callbacks = {
+        getWordTooltip: (word) => `${word.text}`,
+    };
 
     useEffect(() => {
         axios_instance
             .get('/consumer/location-restaurants-count')
             .then((res) => {
-                setLocations(res.data);
+                const ret = res.data.map((item) => ({
+                    text: item.city,
+                    value: Math.floor(item.restaurant_count / 100) + 10,
+                }));
+                setLocations(ret);
             });
     }, []);
 
-    return <ReactWordcloud words={locations} />;
+    return <ReactWordcloud words={locations} callbacks={callbacks} />;
 }
 
 export { LocationWordCloud };
