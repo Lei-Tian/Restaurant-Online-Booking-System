@@ -34,7 +34,3 @@ class SearchOut(BaseModel):
     restaurant_id: int
     restaurant_name: str
     available_windows: t.List[AvailableWindow]
-
-
-class SelectTableIn(BaseModel):
-    restaurant_table_id: int
