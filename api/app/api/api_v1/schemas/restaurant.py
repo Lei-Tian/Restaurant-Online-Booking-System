@@ -45,7 +45,7 @@ class OrderBase(BaseModel):
     time_updated: datetime
 
 
-class OrderItem(BaseModel):
+class OrderItem(OrderBase):
     class Config:
         orm_mode = True
 

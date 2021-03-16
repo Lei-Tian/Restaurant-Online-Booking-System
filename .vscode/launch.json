@@ -23,5 +23,13 @@
                 "main:app", "--reload", "--port", "9000", "--host", "0.0.0.0"
             ]
         },
+        {
+            "name": "worker",
+            "type": "python",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/api",
+            "module": "celery",
+            "args": ["-A", "app.core.celery_app", "worker", "--loglevel=INFO"] 
+        }
     ]
 }

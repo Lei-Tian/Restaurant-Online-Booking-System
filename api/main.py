@@ -1,5 +1,6 @@
 
 from pathlib import Path
+import uu
 
 import uvicorn
 from fastapi import Depends, FastAPI
@@ -15,11 +16,11 @@ from app.api.api_v1.routers.consumer import consumer_router
 from app.api.api_v1.routers.user import users_router
 from app.core import config
 from app.core.auth import get_current_active_user
-from app.core.celery_app import celery_app
 from app.db.session import SessionLocal, get_db
+from app.tasks import greeting
 from app.utils.logger import CustomizeLogger
 from app.utils.view import register_router
-
+ 
 config_path=Path(__file__).with_name("logging_config.json")
 
 def create_app(serve_static: bool = False) -> FastAPI:
@@ -59,15 +60,15 @@ async def db_session_middleware(request: Request, call_next):
     return response
 
 
-@app.get("/api/v1")
+@app.get("/api/")
 async def root(request: Request):
     request.app.logger.info("hello nomorewait")
     return {"message": "Hello NoMoreWait"}
 
 
 @app.get("/api/v1/task")
-async def example_task():
-    celery_app.send_task("app.tasks.example_task", args=["Hello World"])
+async def example_task(request: Request):
+    greeting.apply_async(args=("Hello NoMoreWait!",), countdown=5)
     return {"message": "success"}
 
 
