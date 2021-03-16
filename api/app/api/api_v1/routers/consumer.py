@@ -8,7 +8,7 @@ from app.api.api_v1.schemas.consumer import (
     OrderIn,
     SearchIn,
     SearchOut,
-    SelectTableIn,
+    AvailableWindow,
 )
 from app.api.api_v1.schemas.restaurant import OrderItem
 from app.core.auth import get_current_active_user
@@ -43,12 +43,12 @@ async def search_restaurant_tables(
 @r.post("/select-table", response_model=OrderItem)
 async def select_table(
     request: Request,
-    select_table_in: SelectTableIn,
+    available_window: AvailableWindow,
 ):
     """
     Select a table
     """
-    return consumer.select_table(request, request.state.db, select_table_in)
+    return consumer.select_table(request, request.state.db, available_window)
 
 
 @r.post("/order", response_model=OrderItem)
