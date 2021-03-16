@@ -30,9 +30,7 @@ def select_table(request: Request, db: Session, available_window: AvailableWindo
     """To reserve a table by a given available_window
     Given available_window,
         if there is no matched row(restaurant_table_id and booking_time) in the TableAvailability table, then insert a new row.
-        if there is a matched row in the TableAvailability table,
-            if is_available is True, then update it to False using "SELECT FOR UPDATE" to avoid race condition;
-            else return failure with a reason
+        else update is_available to False using "SELECT ... FOR UPDATE" to avoid race condition.
     """
     #TODO:
 
