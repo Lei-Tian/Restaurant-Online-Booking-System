@@ -11,7 +11,7 @@ stop_web:
 	ps -ef | grep serve | grep build | awk '{print $$2}' | xargs kill
 
 start_worker:
-	cd api/ && celery -A app.core.celery_app worker --loglevel=INFO -f /tmp/nomorewait/nomorewait_worker.log &
+	cd api/ && celery -A app.core.celery_app worker -B --loglevel=INFO -f /tmp/nomorewait/nomorewait_worker.log -s /tmp/nomorewait/celerybeat-schedule.db &
 
 stop_worker:
 	ps -ef | grep celery_app | awk '{print $$2}' | xargs kill

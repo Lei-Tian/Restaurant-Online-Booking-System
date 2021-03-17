@@ -1,6 +1,5 @@
 
 from pathlib import Path
-import uu
 
 import uvicorn
 from fastapi import Depends, FastAPI
@@ -8,6 +7,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi_cache import caches, close_caches
+from fastapi_cache.backends.redis import CACHE_KEY, RedisCacheBackend
 from starlette.requests import Request
 
 from app.api.api_v1.routers import route as route_v1
@@ -20,7 +21,7 @@ from app.db.session import SessionLocal, get_db
 from app.tasks import greeting
 from app.utils.logger import CustomizeLogger
 from app.utils.view import register_router
- 
+
 config_path=Path(__file__).with_name("logging_config.json")
 
 def create_app(serve_static: bool = False) -> FastAPI:
@@ -58,6 +59,16 @@ async def db_session_middleware(request: Request, call_next):
     response = await call_next(request)
     request.state.db.close()
     return response
+
+
+@app.on_event('startup')
+async def on_startup():
+    caches.set(CACHE_KEY, RedisCacheBackend(config.REDIS_URI))
+
+
+@app.on_event('shutdown')
+async def on_shutdown():
+    await close_caches
 
 
 @app.get("/api/")

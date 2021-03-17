@@ -1,7 +1,16 @@
-from app.db.session import Base
+import json
+import typing as t
+
+from celery.utils.log import get_task_logger
 from fastapi.exceptions import HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+
+from app.db.session import Base, get_session
+from app.utils import constants
+from app.utils.cache import redis_client
+
+logger = get_task_logger(__name__)
 
 
 def get_all_items(db: Session, model: Base, skip: int = 0, limit: int = 100):
@@ -45,5 +54,23 @@ def delete_item(db: Session, model: Base, _id: int):
     return db_item
 
 
-def get_all_locations():
-    pass
+def get_all_locations(is_open: bool=True) -> t.List[dict]:
+    locations = redis_client.get(constants.ALL_LOCATIONS)
+    if locations:
+        logger.info("locations are loaded from cache")
+        locations = json.loads(locations)
+    else:
+        locations = []
+        with get_session() as db:
+            rows = db.execute(f"SELECT DISTINCT location_id, city, state, country FROM restaurant, location where location_id = location.id AND is_open = {is_open}").fetchall()
+            for _id, city, state, country in rows:
+                locations.append({"id": _id, "city": city, "state": state, "country": country})
+            redis_client.set(constants.ALL_LOCATIONS, json.dumps(locations), 60 * 60)
+            logger.info("locations are set to cache")
+    return locations
+
+
+def get_popular_restaurants(location_id: int) -> t.List[int]:
+    key = f"{constants.POPULAR_RESTAURANTS_PER_LOCATION_PREFIX}{location_id}"
+    logger.info(f"loading popular restaurants(key={key}) from cache...")
+    return json.loads(redis_client.get(key))

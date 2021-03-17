@@ -29,7 +29,7 @@
             "request": "launch",
             "cwd": "${workspaceFolder}/api",
             "module": "celery",
-            "args": ["-A", "app.core.celery_app", "worker", "--loglevel=INFO"] 
+            "args": ["-A", "app.core.celery_app", "worker", "-B", "--loglevel=INFO", "-s", "/tmp/nomorewait/celerybeat-schedule.db"] 
         }
     ]
 }

@@ -4,21 +4,32 @@ from fastapi import APIRouter, Depends, Request
 
 from app.api.api_v1.crud import consumer
 from app.api.api_v1.schemas.consumer import (
+    AvailableWindow,
     LocationRestaurantCount,
     OrderIn,
     SearchIn,
     SearchOut,
-    AvailableWindow,
 )
 from app.api.api_v1.schemas.restaurant import OrderItem
 from app.core.auth import get_current_active_user
 from app.db.session import get_db
+from app.utils.crud import get_all_locations, get_popular_restaurants
 
 consumer_router = r = APIRouter(
     prefix='/v1/consumer',
     tags=['consumer'],
     dependencies=[Depends(get_db), Depends(get_current_active_user)]
 )
+
+
+@r.get('/support-locations', response_model=t.List[dict])
+async def get_all_supported_locations(request: Request):
+    return get_all_locations()
+
+
+@r.get('/popular-restaurants', response_model=t.List[int])
+async def get_popular_restaurants_by_location(request: Request, location_id: int):
+    return get_popular_restaurants(location_id)
 
 
 @r.get("/location-restaurants-count", response_model=t.List[LocationRestaurantCount])
