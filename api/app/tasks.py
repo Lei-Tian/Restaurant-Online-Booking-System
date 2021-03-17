@@ -1,7 +1,8 @@
 from celery.utils.log import get_task_logger
+
 from app.core.celery_app import celery_app
-from app.db.session import get_session
 from app.db.models.restaurant import OrderStatus
+from app.db.session import get_session
 
 logger = get_task_logger(__name__)
 
@@ -17,3 +18,10 @@ def cancel_order(order_ref_id: str):
     with get_session() as db:
         db.execute(f"UPDATE order SET status = {OrderStatus.cancelled.value} WHERE ref_id = {order_ref_id}")
     logger.info(f"Order(id={order_ref_id}) has been cancelled")
+
+
+@celery_app.task
+def update_popular_restaurants():
+    logger.info("refreshing popular restaurants...")
+    with get_session() as db:
+        pass

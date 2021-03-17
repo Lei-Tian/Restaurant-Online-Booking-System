@@ -166,3 +166,9 @@ Thumbs.db
 # VSCODE #
 ############
 .vscode/settings.json
+
+
+############
+# Celery #
+############
+celerybeat-schedule.db

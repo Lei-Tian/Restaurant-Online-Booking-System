@@ -43,3 +43,7 @@ def delete_item(db: Session, model: Base, _id: int):
     db.delete(db_item)
     db.commit()
     return db_item
+
+
+def get_all_locations():
+    pass
