@@ -73,4 +73,5 @@ def get_all_locations(is_open: bool=True) -> t.List[dict]:
 def get_popular_restaurants(location_id: int) -> t.List[int]:
     key = f"{constants.POPULAR_RESTAURANTS_PER_LOCATION_PREFIX}{location_id}"
     logger.info(f"loading popular restaurants(key={key}) from cache...")
-    return json.loads(redis_client.get(key))
+    ret = redis_client.get(key)
+    return json.loads(ret) if ret else []
