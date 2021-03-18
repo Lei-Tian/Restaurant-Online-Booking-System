@@ -10,7 +10,7 @@ class LocationRestaurantCount(LocationBase):
     restaurant_count: int
 
 
-class OrderIn(BaseModel):
+class ConfirmOrderIn(BaseModel):
     ref_id: str
 
 
@@ -28,6 +28,10 @@ class SearchIn(BaseModel):
 class AvailableWindow(BaseModel):
     restaurant_table_id: int
     booking_time: datetime
+
+
+class SelectTableIn(AvailableWindow):
+    party_size: int
 
 
 class SearchOut(BaseModel):

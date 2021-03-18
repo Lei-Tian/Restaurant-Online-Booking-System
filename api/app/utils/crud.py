@@ -31,16 +31,17 @@ def get_item_by_name(db: Session, model: Base, name: str):
     return db.query(model).first(model.name == name)
 
 
-def create_item(db: Session, model: Base, payload: BaseModel):
-    db_item = model(**payload.dict())
+def create_item(db: Session, model: Base, payload: t.Union[dict, BaseModel]):
+    if isinstance(payload, BaseModel): payload = payload.dict()
+    db_item = model(**payload)
     db.add(db_item)
     db.commit()
     return db_item
 
 
-def update_item(db: Session, model: Base, _id: int, payload: BaseModel):
+def update_item(db: Session, model: Base, _id: int, payload: t.Union[dict, BaseModel]):
     db_item = get_item(db, model, _id)
-    update_data = payload.dict(exclude_unset=True)
+    update_data = payload.dict(exclude_unset=True) if isinstance(payload, BaseModel) else payload
     for k, v in update_data.items():
         setattr(db_item, k, v)
     db.commit()

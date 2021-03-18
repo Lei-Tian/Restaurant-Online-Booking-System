@@ -1,6 +1,7 @@
 import enum
 import uuid
 
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.sql.schema import CheckConstraint, Column, ForeignKey
@@ -81,7 +82,7 @@ class Order(Base):
     # columns
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("user.id", ondelete="SET NULL"))
-    ref_id = Column(String(50), index=True, unique=True, default=str(uuid.uuid4()))
+    ref_id = Column(UUID(as_uuid=True), unique=True, default=uuid.uuid4)
     status = Column(Enum(OrderStatus))
     party_size = Column(Integer)
     time_created = Column(DateTime(timezone=True), server_default=func.now())

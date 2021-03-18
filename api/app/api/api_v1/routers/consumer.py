@@ -4,11 +4,11 @@ from fastapi import APIRouter, Depends, Request
 
 from app.api.api_v1.crud import consumer
 from app.api.api_v1.schemas.consumer import (
-    AvailableWindow,
+    ConfirmOrderIn,
     LocationRestaurantCount,
-    OrderIn,
     SearchIn,
     SearchOut,
+    SelectTableIn,
 )
 from app.api.api_v1.schemas.restaurant import OrderItem
 from app.core.auth import get_current_active_user
@@ -54,18 +54,18 @@ async def search_restaurant_tables(
 @r.post("/select-table", response_model=OrderItem)
 async def select_table(
     request: Request,
-    available_window: AvailableWindow,
+    select_table_params: SelectTableIn,
 ):
     """
     Select a table
     """
-    return consumer.select_table(request, request.state.db, available_window)
+    return consumer.select_table(request, request.state.db, select_table_params)
 
 
 @r.post("/order", response_model=OrderItem)
 async def confirm_order(
     request: Request,
-    order_in: OrderIn,
+    order_in: ConfirmOrderIn,
 ):
     """
     Confirm an order

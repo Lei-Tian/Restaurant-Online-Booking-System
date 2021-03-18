@@ -42,7 +42,7 @@ class OrderBase(BaseModel):
     status: OrderStatus
     party_size: int
     time_created: datetime
-    time_updated: datetime
+    time_updated: t.Optional[datetime]
 
 
 class OrderItem(OrderBase):
