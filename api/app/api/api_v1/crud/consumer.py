@@ -27,6 +27,10 @@ def get_location_restaurants_count(request: Request, db: Session) -> t.List[Loca
 
 
 def search_restaurant_tables(request: Request, db: Session, current_usersearch_params: SearchIn) -> t.List[SearchOut]:
+    # step1: get location_id by (country, state, city from location table)
+    # step2: utils.crud.get_popular_restaurants(location_id) -> popular_restaurants(a list of restaurant_id) estimate 1200+
+    # step3: iterate from restaurant_ids -> find 3 nearest available_windows for each restaurant_id (1100+)
+    # return result
     pass
 
 
@@ -35,6 +39,12 @@ def select_table(request: Request, db: Session, select_table_params: SelectTable
     Given available_window,
         if there is no matched row(restaurant_table_id and booking_time) in the TableAvailability table, then insert a new row.
         else update is_available to False using "SELECT ... FOR UPDATE" to avoid race condition.
+
+    Given: resetaurant_id=1, booking_time=17:00, Optional table_type=GENERAL
+    STEP1: get all tables where restaurant_id=1 -> [1, 2, 3, 4, 5, 6, 7]
+        # restaurant_table_ids = get_all_table_ids(restaurant_id=select_table_params.restaurant_id)
+    STEP2: check if any[1, 2, 3, 4, 5, 6, 7] is available at 17:00   (available means no row)
+    STEP3: let's say restaurant_table_id=6 is available at 17:00, then go to "no matched row" code block
     """
     # create an order
     order_data = {'user_id': request.state.current_active_user.id, 'status': OrderStatus.pending, 'party_size': select_table_params.party_size} 
@@ -45,12 +55,7 @@ def select_table(request: Request, db: Session, select_table_params: SelectTable
     ).first()
     if table_availability_row:
         # matched row found
-        if table_availability_row.is_available:
-            # update is_available to False
-            crud_utils.update_item(db, model=TableAvailability, _id=table_availability_row.id, payload={'is_available': False})
-        else:
-            # failed to find table availability
-            raise HTTPException(status_code=409, detail=f"There is no available spot at {select_table_params.booking_time}")
+        raise HTTPException(status_code=409, detail=f"There is no available spot at {select_table_params.booking_time}")
     else:
         # no matched row
         order = crud_utils.create_item(db, model=Order, payload=order_data)
@@ -70,9 +75,9 @@ def select_table(request: Request, db: Session, select_table_params: SelectTable
 
 def confirm_order(request: Request, db: Session, confirm_order_params: ConfirmOrderIn) -> OrderItem:
     # update order status
-    order = db.query(Order).filter(Order.ref_id == confirm_order_params.ref_id).first()
-    order.status = OrderStatus.complete
+    db.execute(f"UPDATE public.order SET status = '{OrderStatus.complete.value.lower()}' where ref_id = '{confirm_order_params.ref_id}'")
     db.commit()
+    order = db.query(Order).filter(Order.ref_id == confirm_order_params.ref_id).first()
     # cancel the execution of cancel_order task
     celery_app.control.revoke(confirm_order_params.ref_id)
     request.app.logger.info(f"cancel_order task({confirm_order_params.ref_id}) has been revoked")

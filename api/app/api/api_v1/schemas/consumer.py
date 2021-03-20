@@ -4,6 +4,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 from app.api.api_v1.schemas.location import LocationBase
+from app.db.models.restaurant import RestaurantTableType
 
 
 class LocationRestaurantCount(LocationBase):
@@ -26,12 +27,13 @@ class SearchIn(BaseModel):
 
 
 class AvailableWindow(BaseModel):
-    restaurant_table_id: int
     booking_time: datetime
 
 
 class SelectTableIn(AvailableWindow):
+    restaurant_id: int
     party_size: int
+    table_type: t.Optional[RestaurantTableType]
 
 
 class SearchOut(BaseModel):
