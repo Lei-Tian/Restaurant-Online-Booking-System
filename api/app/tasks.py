@@ -21,7 +21,7 @@ def greeting(words: str):
 def cancel_order(order_ref_id: str):
     logger.info(f"Cancelling order(ref_id={order_ref_id})")
     with get_session() as db:
-        db.execute(f"UPDATE order SET status = {OrderStatus.cancelled.value} WHERE ref_id = {order_ref_id}")
+        db.execute(f"UPDATE public.order SET status = '{OrderStatus.cancelled.value.lower()}' WHERE ref_id = '{order_ref_id}'")
     logger.info(f"Order(id={order_ref_id}) has been cancelled")
 
 
