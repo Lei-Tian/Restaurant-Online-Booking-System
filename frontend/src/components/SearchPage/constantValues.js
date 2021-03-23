@@ -29,3 +29,29 @@ export const TIME_CHOICES = [
     '11:00 PM',
     '11:30 PM',
 ];
+
+export const PARTY_SIZE_CHOICES = [
+    '1 guest',
+    '2 guests',
+    '3 guests',
+    '4 guests',
+    '5 guests',
+    '6 guests',
+    '7 guests',
+    '8 guests',
+    '8+ guests',
+];
+
+export const CUISINE_CHOICES = [
+    'American',
+    'BBQ',
+    'Brazil',
+    'Chinese',
+    'Italian',
+    'Greek',
+    'Korean',
+    'Mexican',
+    'Sandwich',
+    'Spanish',
+    'Thai',
+];
