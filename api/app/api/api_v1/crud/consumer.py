@@ -25,7 +25,6 @@ def get_location_restaurants_count(request: Request, db: Session) -> t.List[Loca
         result.append(LocationRestaurantCount(restaurant_count=count, city=city, state=state, country=country))
     return result
 
-
 def search_restaurant_tables(request: Request, db: Session, current_usersearch_params: SearchIn) -> t.List[SearchOut]:
     # step1: get location_id by (country, state, city from location table)
     get_loc_sql = f"SELECT id FROM location WHERE city = '{current_usersearch_params.city}' AND state = '{current_usersearch_params.state}' AND country = '{current_usersearch_params.country}'"
@@ -38,55 +37,36 @@ def search_restaurant_tables(request: Request, db: Session, current_usersearch_p
         # step 3.1: get the table ids of a popular restaurant
         get_table_sql = f"SELECT id FROM restaurant_table WHERE restaurant_id = {restaurantID}"
         table_ids = db.execute(get_table_sql).fetchall()
+        totalTableCount = len(table_ids)
+        for i in range(len(table_ids)):
+            table_ids[i] = str(table_ids[i][0])
+        table_ids = ", ".join(table_ids)
         # step 3.2: get the name of a popular restaurant
-        get_restaurant_name_sql = f"SELECT name FROM restaurant_table WHERE restaurant_id = {restaurantID}"
+        get_restaurant_name_sql = f"SELECT name FROM restaurant WHERE id = {restaurantID}"
         restaurantName = db.execute(get_restaurant_name_sql).fetchall()[0][0]
         # step 3.3: get the 3 nearest available_windows (among all tables) of a popular restaurant
-        availableWindows = getAvailableWindowsAllTables(db, table_ids, current_usersearch_params.datetime)
-        for i in range(len(availableWindows)):
-            availableWindows[i] = AvailableWindow(booking_time = availableWindows[i])
-        results.append(SearchOut(restaurant_id = restaurantID, restaurant_name = restaurantName, available_windows = availableWindows))
+        available_windows, timeslots = [], [current_usersearch_params.datetime]
+        for offset in range(1, 6):
+            timeslots.append(current_usersearch_params.datetime - timedelta(hours = offset))
+            timeslots.append(current_usersearch_params.datetime + timedelta(hours = offset))
+        for i in range(11):
+            searchTime = timeslots[i]
+            if isValidSeachTime(searchTime):
+                get_table_count_sql = f"SELECT COUNT(restaurant_table_id) FROM table_availability where booking_time = \'{searchTime}\' AND restaurant_table_id IN ({table_ids})"
+                reservedTableCount = db.execute(get_table_count_sql).fetchall()[0][0]
+                if reservedTableCount < totalTableCount:
+                    available_windows.append(AvailableWindow(booking_time = searchTime))
+            if len(available_windows) == 3:
+                break
+        results.append(SearchOut(restaurant_id = restaurantID, restaurant_name = restaurantName, available_windows = available_windows))
     return results
 
-def getAvailableWindowsAllTables(db, table_ids, searchTime):
-    available_windows = []
-    # iterate through all tables
-    for table_id in table_ids:
-        # get the 3 nearest available_windows of a table
-        one_table_available_windows = getAvailableWindowOneTable(db, table_id[0], searchTime)
-        available_windows.extend(one_table_available_windows)
-    # get the 3 nearest available_windows among all tables
-    return findThreeClosest(available_windows, searchTime)
-
-def getAvailableWindowOneTable(db, table_id, searchTime):
-    get_reservation_sql = f"SELECT booking_time FROM table_availability WHERE restaurant_table_id = {table_id}"
-    reservedTimes = db.execute(get_reservation_sql).fetchall()
-    reservedTimes = set(reservedTimes)
-    available_windows = []
-    if searchTime not in reservedTimes:
-        available_windows.append(searchTime)
-    offset = 1
-    while len(available_windows) < 3:
-        if searchTime- timedelta(hours = offset) not in reservedTimes:
-            available_windows.append(searchTime - timedelta(hours = offset))
-        if len(available_windows) < 3 and searchTime + timedelta(hours = offset) not in reservedTimes:
-            available_windows.append(searchTime + timedelta(hours = offset))
-        offset += 1
-    return available_windows
-
-def findThreeClosest(availableTimes, searchTime):
-    first, second, third = None, None, None
-    for available_time in availableTimes:
-        if first is None or abs(first - searchTime) > abs(available_time - searchTime):
-            third = second
-            second = first
-            first = available_time
-        elif second is None or abs(second - searchTime) > abs(available_time - searchTime):
-            third = second
-            second = available_time
-        elif third is None or abs(third - searchTime) > abs(available_time - searchTime):
-            third = available_time
-    return [first, second, third]
+def isValidSeachTime(searchTime):
+    if searchTime.timestamp() <= datetime.now().timestamp():
+        return False
+    if searchTime.time() >= time(23) or searchTime.time() < time(10):
+        return False
+    return True
 
 def select_table(request: Request, db: Session, select_table_params: SelectTableIn) -> OrderItem:
     """To reserve a table by a given available_window
