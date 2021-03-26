@@ -1,4 +1,6 @@
 
+import logging
+import time
 from pathlib import Path
 
 import uvicorn
@@ -22,6 +24,7 @@ from app.tasks import greeting
 from app.utils.logger import CustomizeLogger
 from app.utils.view import register_router
 
+logger = logging.getLogger(__name__)
 config_path=Path(__file__).with_name("logging_config.json")
 
 def create_app(serve_static: bool = False) -> FastAPI:
@@ -35,7 +38,7 @@ def create_app(serve_static: bool = False) -> FastAPI:
         allow_headers=["*"],
     ) 
     # set app logger
-    app.logger = CustomizeLogger.make_logger(config_path)
+    CustomizeLogger.make_logger(config_path)
     # serve static files
     if serve_static: serve_static_files(app)
     return app
@@ -61,6 +64,15 @@ async def db_session_middleware(request: Request, call_next):
     return response
 
 
+@app.middleware("http")
+async def log_session_middleware(request: Request, call_next):
+    logger.info(f"[REQ IN]: url={request.url}")
+    start_time = time.time()
+    response = await call_next(request)
+    logger.info(f"[RES OUT]: total_time={time.time() - start_time:.6f}s")
+    return response
+
+
 @app.on_event('startup')
 async def on_startup():
     caches.set(CACHE_KEY, RedisCacheBackend(config.REDIS_URI))
@@ -73,7 +85,7 @@ async def on_shutdown():
 
 @app.get("/api/")
 async def root(request: Request):
-    request.app.logger.info("hello nomorewait")
+    logger.info("hello nomorewait")
     return {"message": "Hello NoMoreWait"}
 
 
