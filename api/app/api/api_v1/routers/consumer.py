@@ -14,6 +14,7 @@ from app.api.api_v1.schemas.restaurant import OrderItem
 from app.core.auth import get_current_active_user
 from app.db.session import get_db
 from app.utils.crud import get_all_locations, get_popular_restaurants
+from app.utils.pagination import Page
 
 consumer_router = r = APIRouter(
     prefix='/v1/consumer',
@@ -40,15 +41,17 @@ async def location_restaurants_count(request: Request):
     return consumer.get_location_restaurants_count(request, request.state.db)
 
 
-@r.post("/search", response_model=t.List[SearchOut])
+@r.post("/search", response_model=Page[SearchOut])
 async def search_restaurant_tables(
     request: Request,
     search_in: SearchIn,
+    offset: int = 0,
+    limit: int = 100,
 ):
     """
     Find all available restaurants and their available windows
     """
-    return consumer.search_restaurant_tables(request, request.state.db, search_in)
+    return consumer.search_restaurant_tables(request, request.state.db, search_in, offset, limit)
 
 
 @r.post("/select-table", response_model=OrderItem)

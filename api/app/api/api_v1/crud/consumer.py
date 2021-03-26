@@ -18,6 +18,7 @@ from app.api.api_v1.schemas.restaurant import OrderItem, TableAvailabilityItem
 from app.core.celery_app import celery_app
 from app.db.models.restaurant import Order, OrderStatus, TableAvailability
 from app.utils import crud as crud_utils
+from app.utils.pagination import Page, PageLinks, get_next_url, get_prev_url
 
 logger = logging.getLogger(__name__)
 
@@ -30,8 +31,8 @@ def get_location_restaurants_count(request: Request, db: Session) -> t.List[Loca
         result.append(LocationRestaurantCount(restaurant_count=count, city=city, state=state, country=country))
     return result
 
-def search_restaurant_tables(request: Request, db: Session, current_usersearch_params: SearchIn) -> t.List[SearchOut]:
-    logger.info(f"search restaurant table params({current_usersearch_params})...")
+def search_restaurant_tables(request: Request, db: Session, current_usersearch_params: SearchIn, offset: int, limit: int) -> Page[SearchOut]:
+    logger.info(f"search restaurant tables[params={current_usersearch_params}|offset={offset}|limit={limit}]...")
     # step1: get location_id by (country, state, city from location table)
     get_loc_sql = f"SELECT id FROM location WHERE city = '{current_usersearch_params.city}' AND state = '{current_usersearch_params.state}' AND country = '{current_usersearch_params.country}'"
     location_id = db.execute(get_loc_sql).fetchall()[0][0]
@@ -39,7 +40,7 @@ def search_restaurant_tables(request: Request, db: Session, current_usersearch_p
     # step2: utils.crud.get_popular_restaurants(location_id) -> popular_restaurants(a list of restaurant_id) estimate 1200+
     popular_restaurants = crud_utils.get_popular_restaurants(location_id)
     # step3: iterate from restaurant_ids -> find 3 nearest available_windows for each restaurant_id (1100+)
-    for restaurantID in popular_restaurants:
+    for restaurantID in popular_restaurants[offset:offset+limit]:
         # step 3.1: get the table ids of a popular restaurant
         get_table_sql = f"SELECT id FROM restaurant_table WHERE restaurant_id = {restaurantID}"
         table_ids = db.execute(get_table_sql).fetchall()
@@ -48,13 +49,13 @@ def search_restaurant_tables(request: Request, db: Session, current_usersearch_p
             table_ids[i] = str(table_ids[i][0])
         table_ids = ", ".join(table_ids)
         # step 3.2: get restaurant info
-        get_restaurant_name_sql = f"SELECT name, address FROM restaurant WHERE id = {restaurantID}"
-        restaurant_name, restaurant_addr = db.execute(get_restaurant_name_sql).fetchall()[0]
+        get_restaurant_name_sql = f"SELECT name, address, star FROM restaurant WHERE id = {restaurantID}"
+        restaurant_name, restaurant_addr, restaurant_star = db.execute(get_restaurant_name_sql).fetchall()[0]
         # step 3.3: get the 3 nearest available_windows (among all tables) of a popular restaurant
         available_windows, timeslots = [], [current_usersearch_params.datetime]
-        for offset in range(1, 6):
-            timeslots.append(current_usersearch_params.datetime - timedelta(hours = offset))
-            timeslots.append(current_usersearch_params.datetime + timedelta(hours = offset))
+        for delta_hour in range(1, 6):
+            timeslots.append(current_usersearch_params.datetime - timedelta(hours=delta_hour))
+            timeslots.append(current_usersearch_params.datetime + timedelta(hours=delta_hour))
         for i in range(11):
             searchTime = timeslots[i]
             if isValidSeachTime(searchTime):
@@ -64,8 +65,16 @@ def search_restaurant_tables(request: Request, db: Session, current_usersearch_p
                     available_windows.append(AvailableWindow(booking_time = searchTime))
             if len(available_windows) == 3:
                 break
-        results.append(SearchOut(restaurant_id=restaurantID, restaurant_name=restaurant_name, restaurant_address=restaurant_addr, available_windows=available_windows))
-    return results
+        results.append(SearchOut(restaurant_id=restaurantID, name=restaurant_name, address=restaurant_addr, star=float(restaurant_star), available_windows=available_windows))
+    return Page(
+        links=PageLinks(
+            self=str(request.url),
+            next=get_next_url(request, offset, limit, len(popular_restaurants)),
+            prev=get_prev_url(request, offset, limit)
+        ),
+        total=len(popular_restaurants), start=offset, limit=limit, size=len(results),
+        items=results
+    )
 
 def isValidSeachTime(searchTime):
     OPEN_HOUR = 10

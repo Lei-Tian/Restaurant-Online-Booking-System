@@ -38,6 +38,7 @@ class SelectTableIn(AvailableWindow):
 
 class SearchOut(BaseModel):
     restaurant_id: int
-    restaurant_name: str
-    restaurant_address: str
+    name: str
+    address: str
+    star: float
     available_windows: t.List[AvailableWindow]
