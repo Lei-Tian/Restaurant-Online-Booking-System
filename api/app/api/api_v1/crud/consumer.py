@@ -47,9 +47,9 @@ def search_restaurant_tables(request: Request, db: Session, current_usersearch_p
         for i in range(len(table_ids)):
             table_ids[i] = str(table_ids[i][0])
         table_ids = ", ".join(table_ids)
-        # step 3.2: get the name of a popular restaurant
-        get_restaurant_name_sql = f"SELECT name FROM restaurant WHERE id = {restaurantID}"
-        restaurantName = db.execute(get_restaurant_name_sql).fetchall()[0][0]
+        # step 3.2: get restaurant info
+        get_restaurant_name_sql = f"SELECT name, address FROM restaurant WHERE id = {restaurantID}"
+        restaurant_name, restaurant_addr = db.execute(get_restaurant_name_sql).fetchall()[0]
         # step 3.3: get the 3 nearest available_windows (among all tables) of a popular restaurant
         available_windows, timeslots = [], [current_usersearch_params.datetime]
         for offset in range(1, 6):
@@ -58,13 +58,13 @@ def search_restaurant_tables(request: Request, db: Session, current_usersearch_p
         for i in range(11):
             searchTime = timeslots[i]
             if isValidSeachTime(searchTime):
-                get_table_count_sql = f"SELECT COUNT(restaurant_table_id) FROM table_availability where booking_time = \'{searchTime}\' AND restaurant_table_id IN ({table_ids})"
+                get_table_count_sql = f"SELECT COUNT(restaurant_table_id) FROM table_availability where booking_time = '{searchTime}' AND restaurant_table_id IN ({table_ids})"
                 reservedTableCount = db.execute(get_table_count_sql).fetchall()[0][0]
                 if reservedTableCount < totalTableCount:
                     available_windows.append(AvailableWindow(booking_time = searchTime))
             if len(available_windows) == 3:
                 break
-        results.append(SearchOut(restaurant_id = restaurantID, restaurant_name = restaurantName, available_windows = available_windows))
+        results.append(SearchOut(restaurant_id=restaurantID, restaurant_name=restaurant_name, restaurant_address=restaurant_addr, available_windows=available_windows))
     return results
 
 def isValidSeachTime(searchTime):
