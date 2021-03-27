@@ -26,7 +26,7 @@ class Restaurant(Base):
     # columns
     id = Column(Integer, primary_key=True, index=True)
     location_id = Column(Integer, ForeignKey("location.id", ondelete="SET NULL"))
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=False, index=True)
     address = Column(Text)
     latitude = Column(Float)
     longitude = Column(Float)
