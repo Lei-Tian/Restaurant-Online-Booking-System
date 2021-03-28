@@ -31,6 +31,7 @@ class SearchOut(BaseModel):
     name: str
     address: str
     star: float
+    party_size: int
     available_windows: t.List[datetime]
 
 

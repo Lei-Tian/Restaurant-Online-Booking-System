@@ -70,7 +70,7 @@ def search_restaurant_tables(request: Request, db: Session, current_usersearch_p
                     available_windows.append(searchTime)
             if len(available_windows) == 3:
                 break
-        results.append(SearchOut(id=restaurantID, name=restaurant_name, address=restaurant_addr, star=float(restaurant_star), available_windows=available_windows))
+        results.append(SearchOut(id=restaurantID, name=restaurant_name, address=restaurant_addr, star=float(restaurant_star), party_size=current_usersearch_params.party_size, available_windows=available_windows))
     return Page(
         links=PageLinks(
             base=get_base_url(request),
@@ -98,29 +98,18 @@ def select_table(request: Request, db: Session, select_table_params: SelectTable
     Given: resetaurant_id=1, booking_time=17:00, Optional table_type=GENERAL
     STEP1: get all tables where restaurant_id=1 -> [1, 2, 3, 4, 5, 6, 7]
         # restaurant_table_ids = get_all_table_ids(restaurant_id=select_table_params.restaurant_id)
-    STEP2: check if any[1, 2, 3, 4, 5, 6, 7] is available at 17:00   (available means no row)
+    STEP2: check if any[1, 2, 3, 4, 5, 6, 7] is available at 17:00 (no row means available)
     STEP3: let's say restaurant_table_id=6 is available at 17:00, then go to "no matched row" code block
     """
     # create an order
     order_data = {'user_id': request.state.current_active_user.id, 'status': OrderStatus.pending, 'party_size': select_table_params.party_size} 
-    # try to create table availability row
-    table_availability_row = db.query(TableAvailability).filter(
-        TableAvailability.restaurant_table_id == select_table_params.restaurant_table_id,
-        TableAvailability.booking_time == select_table_params.booking_time,
-    ).first()
-    if table_availability_row:
-        # matched row found
-        raise HTTPException(status_code=409, detail=f"There is no available spot at {select_table_params.booking_time}")
-    else:
-        # no matched row
-        order = crud_utils.create_item(db, model=Order, payload=order_data)
-        table_availability_item = TableAvailabilityItem(
-            restaurant_table_id=select_table_params.restaurant_table_id,
-            order_id=order.id,
-            booking_time=select_table_params.booking_time,
-            is_available=False,
-        )
-        crud_utils.create_item(db, model=TableAvailability, payload=table_availability_item)
+
+    # TODO: implement below
+    # STEP1
+    # STEP2
+    # STEP3
+    # implement end
+
     # order will be auto cancelled in 5min
     countdown_in_sec = 60 * 5
     tasks.cancel_order.apply_async(args=(order.ref_id,), countdown=countdown_in_sec, task_id=order.ref_id)
