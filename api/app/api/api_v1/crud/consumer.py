@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session
 
 from app import tasks
 from app.api.api_v1.schemas.consumer import (
-    AvailableWindow,
     ConfirmOrderIn,
     LocationRestaurantCount,
     SearchIn,
@@ -68,7 +67,7 @@ def search_restaurant_tables(request: Request, db: Session, current_usersearch_p
                 get_table_count_sql = f"SELECT COUNT(restaurant_table_id) FROM table_availability where booking_time = '{searchTime}' AND restaurant_table_id IN ({table_ids})"
                 reservedTableCount = db.execute(get_table_count_sql).fetchall()[0][0]
                 if reservedTableCount < totalTableCount:
-                    available_windows.append(AvailableWindow(booking_time = searchTime))
+                    available_windows.append(searchTime)
             if len(available_windows) == 3:
                 break
         results.append(SearchOut(id=restaurantID, name=restaurant_name, address=restaurant_addr, star=float(restaurant_star), available_windows=available_windows))

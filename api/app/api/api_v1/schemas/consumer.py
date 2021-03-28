@@ -26,19 +26,17 @@ class SearchIn(BaseModel):
     good_for_kids: t.Optional[bool]
 
 
-class AvailableWindow(BaseModel):
-    booking_time: datetime
-
-
-class SelectTableIn(AvailableWindow):
-    restaurant_id: int
-    party_size: int
-    table_type: t.Optional[RestaurantTableType]
-
-
 class SearchOut(BaseModel):
     id: int
     name: str
     address: str
     star: float
-    available_windows: t.List[AvailableWindow]
+    available_windows: t.List[datetime]
+
+
+class SelectTableIn(BaseModel):
+    restaurant_id: int
+    party_size: int
+    booking_time: datetime
+    table_type: t.Optional[RestaurantTableType]
+
