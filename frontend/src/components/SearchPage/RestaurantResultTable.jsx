@@ -2,11 +2,13 @@ import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { DataGrid } from '@material-ui/data-grid';
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { axios_instance } from '../../_helpers';
 
 const limit = 10;
 const columns = [
     { field: 'restaurant_id', hide: true },
+    { field: 'party_size', hide: true },
     { field: 'name', headerName: 'Restaurant Name', width: 230 },
     { field: 'star', headerName: 'Star', width: 80 },
     { field: 'address', headerName: 'Address', width: 300 },
@@ -17,16 +19,37 @@ const columns = [
         renderCell: (params) => {
             return (
                 <div>
-                    {params.value.map((datetime, index) => (
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            size="small"
-                            style={{ marginLeft: 16 }}
-                        >
-                            {datetime.slice(11, 16)}
-                        </Button>
-                    ))}
+                    {params.value.map((datetime, index) => {
+                        return (
+                            <Link
+                                to={{
+                                    pathname: '/booking',
+                                    state: {
+                                        selectTablePayload: {
+                                            booking_time: datetime,
+                                            restaurant_id: params.row.id,
+                                            party_size: params.row.party_size,
+                                            table_type: 'GENERAL',
+                                        },
+                                        restaurantInfo: {
+                                            name: params.row.name,
+                                            address: params.row.address,
+                                        },
+                                    },
+                                }}
+                                style={{ textDecoration: 'none' }}
+                            >
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    size="small"
+                                    style={{ marginLeft: 16 }}
+                                >
+                                    {datetime.slice(11, 16)}
+                                </Button>
+                            </Link>
+                        );
+                    })}
                 </div>
             );
         },
@@ -48,7 +71,7 @@ function RestaurantResultTable(props) {
 
     useEffect(() => {
         setRows(props.data.items);
-    }, []);
+    }, [props.data]);
 
     const handlePageChange = (params) => {
         (async () => {
