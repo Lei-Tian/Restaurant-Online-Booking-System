@@ -12,6 +12,7 @@ import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
+import Snackbar from '@material-ui/core/Snackbar';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import ResetIcon from '@material-ui/icons/ClearAll';
@@ -19,6 +20,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Favorite from '@material-ui/icons/Favorite';
 import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 import SearchIcon from '@material-ui/icons/Search';
+import MuiAlert from '@material-ui/lab/Alert';
 import Rating from '@material-ui/lab/Rating';
 import {
     KeyboardDatePicker,
@@ -37,6 +39,10 @@ import {
 import { useSearchLocation } from './global.state';
 import { LocationSearchBox } from './LocationSearchBox';
 import { RestaurantResultTable } from './RestaurantResultTable';
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -86,9 +92,7 @@ const useStyles = makeStyles((theme) => ({
 function SearchPage() {
     const classes = useStyles();
     const [expanded, setExpanded] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(
-        new Date().toISOString().slice(0, 10),
-    );
+    const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedTime, setSelectedTime] = useState('10:00 AM');
     const [partySize, setPartySize] = useState('2 guests');
     const [cuisine, setCuisine] = useState('');
@@ -97,9 +101,11 @@ function SearchPage() {
     const [location, setLocation] = useSearchLocation();
     const [searchResult, setSearchResult] = useState();
     const [searchPayload, setSearchPayload] = useState();
+    const [searchAlert, setSearchAlert] = useState(false);
+    const [searchAlertText, setSearchAlertText] = useState('');
 
     const handleReset = () => {
-        setSelectedDate(new Date().toISOString().slice(0, 10));
+        setSelectedDate(new Date());
         setSelectedTime('10:00 AM');
         setPartySize('2 guests');
         setLocation('');
@@ -107,20 +113,26 @@ function SearchPage() {
         setGoodForKids(null);
         setMinStar(null);
         setSearchPayload(null);
+        setSearchResult(null);
     };
 
     const handleSearch = () => {
         const [city, state, country] = location.split(', ');
+        const searchDate = `${selectedDate.toISOString().slice(0, 10)}`;
+        let searchTime = parseInt(selectedTime.split(' ')[0]);
+        if (selectedTime.includes('PM')) searchTime += 12;
+        const searchDateTime = `${searchDate}T${searchTime}:00:00.000Z`;
         const payload = {
             country,
             state,
             city,
-            datetime: `${selectedDate}T${selectedTime.split(' ')[0]}:00.000Z`,
+            datetime: searchDateTime,
             party_size: parseInt(partySize.split(' ')[0]),
         };
         if (cuisine) payload['cuisine'] = cuisine;
         if (minStar) payload['min_star'] = minStar;
         if (goodForKids) payload['good_for_kids'] = goodForKids;
+        if (!checkRequiredFields(payload)) return null;
         setSearchPayload(payload);
         (async () => {
             const ret = await axios_instance.post(
@@ -129,6 +141,25 @@ function SearchPage() {
             );
             setSearchResult(ret.data);
         })();
+    };
+
+    const checkRequiredFields = (payload) => {
+        if (!payload.city) {
+            setSearchAlert(true);
+            setSearchAlertText('City cannot be empty');
+            return false;
+        }
+        if (!payload.state) {
+            setSearchAlert(true);
+            setSearchAlertText('State cannot be empty');
+            return false;
+        }
+        if (!payload.country) {
+            setSearchAlert(true);
+            setSearchAlertText('Country cannot be empty');
+            return false;
+        }
+        return true;
     };
 
     return (
@@ -145,11 +176,7 @@ function SearchPage() {
                             id="search-date"
                             label="Date"
                             value={selectedDate}
-                            onChange={(date) => {
-                                setSelectedDate(
-                                    date.toISOString().slice(0, 10),
-                                );
-                            }}
+                            onChange={(date) => setSelectedDate(date)}
                             KeyboardButtonProps={{
                                 'aria-label': 'change date',
                             }}
@@ -307,6 +334,15 @@ function SearchPage() {
                     payload={searchPayload}
                 />
             )}
+            <Snackbar
+                open={searchAlert}
+                autoHideDuration={6000}
+                onClose={() => setSearchAlert(false)}
+            >
+                <Alert onClose={() => setSearchAlert(false)} severity="error">
+                    {searchAlertText}
+                </Alert>
+            </Snackbar>
         </Container>
     );
 }

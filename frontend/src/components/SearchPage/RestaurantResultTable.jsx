@@ -1,3 +1,4 @@
+import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { DataGrid } from '@material-ui/data-grid';
 import React, { useEffect, useState } from 'react';
@@ -9,7 +10,27 @@ const columns = [
     { field: 'name', headerName: 'Restaurant Name', width: 230 },
     { field: 'star', headerName: 'Star', width: 80 },
     { field: 'address', headerName: 'Address', width: 300 },
-    { field: 'windows', headerName: 'Windows', width: 200 },
+    {
+        field: 'available_windows',
+        headerName: 'Windows',
+        width: 300,
+        renderCell: (params) => {
+            return (
+                <div>
+                    {params.value.map((datetime, index) => (
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            style={{ marginLeft: 16 }}
+                        >
+                            {datetime.slice(11, 16)}
+                        </Button>
+                    ))}
+                </div>
+            );
+        },
+    },
 ];
 
 const useStyles = makeStyles((theme) => ({
