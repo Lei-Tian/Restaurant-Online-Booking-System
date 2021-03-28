@@ -18,7 +18,13 @@ from app.api.api_v1.schemas.restaurant import OrderItem, TableAvailabilityItem
 from app.core.celery_app import celery_app
 from app.db.models.restaurant import Order, OrderStatus, TableAvailability
 from app.utils import crud as crud_utils
-from app.utils.pagination import Page, PageLinks, get_next_url, get_prev_url
+from app.utils.pagination import (
+    Page,
+    PageLinks,
+    get_base_url,
+    get_next_url,
+    get_prev_url,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -65,9 +71,10 @@ def search_restaurant_tables(request: Request, db: Session, current_usersearch_p
                     available_windows.append(AvailableWindow(booking_time = searchTime))
             if len(available_windows) == 3:
                 break
-        results.append(SearchOut(restaurant_id=restaurantID, name=restaurant_name, address=restaurant_addr, star=float(restaurant_star), available_windows=available_windows))
+        results.append(SearchOut(id=restaurantID, name=restaurant_name, address=restaurant_addr, star=float(restaurant_star), available_windows=available_windows))
     return Page(
         links=PageLinks(
+            base=get_base_url(request),
             self=str(request.url),
             next=get_next_url(request, offset, limit, len(popular_restaurants)),
             prev=get_prev_url(request, offset, limit)

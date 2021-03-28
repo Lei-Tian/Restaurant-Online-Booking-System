@@ -3,10 +3,13 @@ import { GooglePlaceAutoComplete } from '../../_components';
 import { useSearchLocation } from './global.state';
 
 function LocationSearchBox() {
-    const [_, setSearchLocation] = useSearchLocation();
+    const [location, setSearchLocation] = useSearchLocation();
     return (
         <div>
-            <GooglePlaceAutoComplete setLocation={setSearchLocation} />
+            <GooglePlaceAutoComplete
+                location={location}
+                setLocation={setSearchLocation}
+            />
         </div>
     );
 }

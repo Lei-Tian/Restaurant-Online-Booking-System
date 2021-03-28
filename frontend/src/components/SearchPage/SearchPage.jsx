@@ -14,6 +14,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import ResetIcon from '@material-ui/icons/ClearAll';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Favorite from '@material-ui/icons/Favorite';
 import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
@@ -26,7 +27,7 @@ import {
 import clsx from 'clsx';
 import 'date-fns';
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { axios_instance } from '../../_helpers';
 import { LocationWordCloud } from '../charts';
 import {
     CUISINE_CHOICES,
@@ -35,11 +36,11 @@ import {
 } from './constantValues';
 import { useSearchLocation } from './global.state';
 import { LocationSearchBox } from './LocationSearchBox';
+import { RestaurantResultTable } from './RestaurantResultTable';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        marginTop: theme.spacing(8),
-        padding: theme.spacing(4, 4, 3),
+        padding: theme.spacing(0, 4, 3),
         backgroundColor: 'white',
     },
     locationSearchBox: {
@@ -67,8 +68,12 @@ const useStyles = makeStyles((theme) => ({
     options: {
         marginTop: theme.spacing(2),
     },
-    iconButton: {
+    moreButton: {
         textAlign: 'center',
+    },
+    iconButton: {
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
     },
     cuisineSelectBox: {
         minWidth: 200,
@@ -81,21 +86,55 @@ const useStyles = makeStyles((theme) => ({
 function SearchPage() {
     const classes = useStyles();
     const [expanded, setExpanded] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(Date.now());
-    const [selectedTime, setSelectedTime] = useState('ASAP');
+    const [selectedDate, setSelectedDate] = useState(
+        new Date().toISOString().slice(0, 10),
+    );
+    const [selectedTime, setSelectedTime] = useState('10:00 AM');
     const [partySize, setPartySize] = useState('2 guests');
-    const [cuisine, setCuisine] = useState();
+    const [cuisine, setCuisine] = useState('');
     const [goodForKids, setGoodForKids] = useState();
     const [minStar, setMinStar] = useState();
-    const [searchLocation] = useSearchLocation();
-    const dispatch = useDispatch();
+    const [location, setLocation] = useSearchLocation();
+    const [searchResult, setSearchResult] = useState();
+    const [searchPayload, setSearchPayload] = useState();
+
+    const handleReset = () => {
+        setSelectedDate(new Date().toISOString().slice(0, 10));
+        setSelectedTime('10:00 AM');
+        setPartySize('2 guests');
+        setLocation('');
+        setCuisine('');
+        setGoodForKids(null);
+        setMinStar(null);
+        setSearchPayload(null);
+    };
+
+    const handleSearch = () => {
+        const [city, state, country] = location.split(', ');
+        const payload = {
+            country,
+            state,
+            city,
+            datetime: `${selectedDate}T${selectedTime.split(' ')[0]}:00.000Z`,
+            party_size: parseInt(partySize.split(' ')[0]),
+        };
+        if (cuisine) payload['cuisine'] = cuisine;
+        if (minStar) payload['min_star'] = minStar;
+        if (goodForKids) payload['good_for_kids'] = goodForKids;
+        setSearchPayload(payload);
+        (async () => {
+            const ret = await axios_instance.post(
+                '/consumer/search?offset=0&limit=10',
+                payload,
+            );
+            setSearchResult(ret.data);
+        })();
+    };
 
     return (
         <Container className={classes.root}>
-            <h1>Welcome to NoMoreWait!</h1>
-            <div>
-                <LocationWordCloud />
-            </div>
+            <h1>Welcome to NoMoreWait</h1>
+            <LocationWordCloud />
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <Grid container justify="space-around">
                     <Grid item>
@@ -106,7 +145,11 @@ function SearchPage() {
                             id="search-date"
                             label="Date"
                             value={selectedDate}
-                            onChange={(e) => setSelectedDate(e.target.value)}
+                            onChange={(date) => {
+                                setSelectedDate(
+                                    date.toISOString().slice(0, 10),
+                                );
+                            }}
                             KeyboardButtonProps={{
                                 'aria-label': 'change date',
                             }}
@@ -160,88 +203,110 @@ function SearchPage() {
                         </FormControl>
                     </Grid>
                 </Grid>
-                <div className={classes.iconButton}>
-                    More
-                    <IconButton
-                        className={clsx(classes.expand, {
-                            [classes.expandOpen]: expanded,
-                        })}
-                        onClick={() => setExpanded(!expanded)}
-                        aria-expanded={expanded}
-                        aria-label="show more"
-                    >
-                        <ExpandMoreIcon />
-                    </IconButton>
-                </div>
-                <Collapse in={expanded} timeout="auto" unmountOnExit>
-                    <Grid
-                        container
-                        justify="space-around"
-                        className={classes.options}
-                    >
-                        <Grid item>
-                            <FormControl variant="outlined">
-                                <InputLabel>Cuisine</InputLabel>
-                                <Select
-                                    labelId="cuisine"
-                                    id="cuisine"
-                                    value={cuisine}
-                                    onChange={(e) => setCuisine(e.target.value)}
-                                    label="Cuisine"
-                                    className={classes.cuisineSelectBox}
-                                >
-                                    {CUISINE_CHOICES.map((item) => (
-                                        <MenuItem value={item}>{item}</MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        <Grid item>
-                            <Box
-                                component="fieldset"
-                                mb={3}
-                                borderColor="transparent"
-                            >
-                                <Typography component="legend">
-                                    Min Stars
-                                </Typography>
-                                <Rating
-                                    name="star-rating"
-                                    value={minStar}
-                                    onChange={(event, newValue) => {
-                                        setMinStar(newValue);
-                                    }}
-                                />
-                            </Box>
-                        </Grid>
-                        <Grid item>
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        icon={<FavoriteBorder />}
-                                        checkedIcon={<Favorite />}
-                                        onChange={(event) =>
-                                            setGoodForKids(event.target.checked)
-                                        }
-                                        name="goodForKids"
-                                    />
-                                }
-                                label="Good for Kids"
-                            />
-                        </Grid>
-                    </Grid>
-                </Collapse>
-                <Divider className={classes.divider} />
-                <div className={classes.iconButton}>
-                    <Button
-                        color="secondary"
-                        variant="contained"
-                        startIcon={<SearchIcon />}
-                    >
-                        Search
-                    </Button>
-                </div>
             </MuiPickersUtilsProvider>
+            <div className={classes.moreButton}>
+                More
+                <IconButton
+                    className={clsx(classes.expand, {
+                        [classes.expandOpen]: expanded,
+                    })}
+                    onClick={() => setExpanded(!expanded)}
+                    aria-expanded={expanded}
+                    aria-label="show more"
+                >
+                    <ExpandMoreIcon />
+                </IconButton>
+            </div>
+            <Collapse in={expanded} timeout="auto" unmountOnExit>
+                <Grid
+                    container
+                    justify="space-around"
+                    className={classes.options}
+                >
+                    <Grid item>
+                        <FormControl variant="outlined">
+                            <InputLabel>Cuisine</InputLabel>
+                            <Select
+                                labelId="cuisine"
+                                id="cuisine"
+                                value={cuisine}
+                                onChange={(e) => setCuisine(e.target.value)}
+                                label="Cuisine"
+                                className={classes.cuisineSelectBox}
+                            >
+                                {CUISINE_CHOICES.map((item) => (
+                                    <MenuItem value={item}>{item}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    <Grid item>
+                        <Box
+                            component="fieldset"
+                            mb={3}
+                            borderColor="transparent"
+                        >
+                            <Typography component="legend">
+                                Min Stars
+                            </Typography>
+                            <Rating
+                                name="star-rating"
+                                value={minStar}
+                                onChange={(event, newValue) => {
+                                    setMinStar(newValue);
+                                }}
+                            />
+                        </Box>
+                    </Grid>
+                    <Grid item>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    icon={<FavoriteBorder />}
+                                    checkedIcon={<Favorite />}
+                                    onChange={(event) =>
+                                        setGoodForKids(event.target.checked)
+                                    }
+                                    name="goodForKids"
+                                />
+                            }
+                            label="Good for Kids"
+                        />
+                    </Grid>
+                </Grid>
+            </Collapse>
+            <Divider className={classes.divider} />
+            <Grid container justify="center">
+                <Grid item>
+                    <div className={classes.iconButton}>
+                        <Button
+                            color="secondary"
+                            variant="contained"
+                            startIcon={<SearchIcon />}
+                            onClick={handleSearch}
+                        >
+                            Search
+                        </Button>
+                    </div>
+                </Grid>
+                <Grid item>
+                    <div className={classes.iconButton}>
+                        <Button
+                            variant="contained"
+                            startIcon={<ResetIcon />}
+                            onClick={handleReset}
+                        >
+                            Reset
+                        </Button>
+                    </div>
+                </Grid>
+            </Grid>
+            {searchResult && (
+                <RestaurantResultTable
+                    data={searchResult}
+                    payload={searchPayload}
+                />
+            )}
         </Container>
     );
 }

@@ -31,7 +31,6 @@ const useStyles = makeStyles((theme) => ({
 
 function GooglePlaceAutoComplete(props) {
     const classes = useStyles();
-    const [value, setValue] = React.useState(null);
     const [inputValue, setInputValue] = React.useState('');
     const [options, setOptions] = React.useState([]);
     const loaded = React.useRef(false);
@@ -70,7 +69,7 @@ function GooglePlaceAutoComplete(props) {
         }
 
         if (inputValue === '') {
-            setOptions(value ? [value] : []);
+            setOptions(props.location ? [props.location] : []);
             return undefined;
         }
 
@@ -78,8 +77,8 @@ function GooglePlaceAutoComplete(props) {
             if (active) {
                 let newOptions = [];
 
-                if (value) {
-                    newOptions = [value];
+                if (props.location) {
+                    newOptions = [props.location];
                 }
 
                 if (results) {
@@ -93,7 +92,7 @@ function GooglePlaceAutoComplete(props) {
         return () => {
             active = false;
         };
-    }, [value, inputValue, fetch]);
+    }, [props.location, inputValue, fetch]);
 
     return (
         <Autocomplete
@@ -107,13 +106,10 @@ function GooglePlaceAutoComplete(props) {
             autoComplete
             includeInputInList
             filterSelectedOptions
-            value={value}
+            value={props.location}
             onChange={(event, newValue) => {
                 setOptions(newValue ? [newValue, ...options] : options);
-                setValue(newValue);
-                props.setLocation(
-                    newValue ? newValue.structured_formatting.main_text : '',
-                );
+                props.setLocation(newValue ? newValue.description : '');
             }}
             onInputChange={(event, newInputValue) => {
                 setInputValue(newInputValue);

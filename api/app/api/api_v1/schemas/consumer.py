@@ -37,7 +37,7 @@ class SelectTableIn(AvailableWindow):
 
 
 class SearchOut(BaseModel):
-    restaurant_id: int
+    id: int
     name: str
     address: str
     star: float

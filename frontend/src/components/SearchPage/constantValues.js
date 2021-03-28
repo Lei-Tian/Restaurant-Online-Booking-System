@@ -1,5 +1,4 @@
 export const TIME_CHOICES = [
-    'ASAP',
     '10:00 AM',
     '11:00 AM',
     '12:00 PM',

@@ -7,6 +7,7 @@ from pydantic.generics import GenericModel
 T = TypeVar('T')
 
 class PageLinks(BaseModel):
+    base: str
     self: str
     next: Optional[str]
     prev: Optional[str]
@@ -19,6 +20,10 @@ class Page(GenericModel, Generic[T]):
     limit: int
     size: int
     items: List[T]
+
+
+def get_base_url(request: Request):
+    return str(request.url.remove_query_params(keys=["offset", "limit"]))
 
 
 def get_next_url(request: Request, offset: int, limit: int, total: int) -> Union[None, str]:
