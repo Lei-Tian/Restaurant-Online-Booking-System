@@ -4,6 +4,7 @@ from datetime import datetime
 from pydantic import BaseModel
 
 from app.api.api_v1.schemas.location import LocationBase
+from app.api.api_v1.schemas.restaurant import OrderItem
 from app.db.models.restaurant import RestaurantTableType
 
 
@@ -41,3 +42,6 @@ class SelectTableIn(BaseModel):
     booking_time: datetime
     table_type: t.Optional[RestaurantTableType]
 
+
+class OrderInfoOut(OrderItem):
+    restaurant_name: str

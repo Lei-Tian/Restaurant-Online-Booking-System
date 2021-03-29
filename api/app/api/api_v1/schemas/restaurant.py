@@ -37,10 +37,12 @@ class RestaurantTableItem(RestaurantTableBase):
 
 
 class OrderBase(BaseModel):
-    user_id: int
     ref_id: str
+    user_id: int
+    restaurant_id: int
     status: OrderStatus
     party_size: int
+    booking_time: datetime
     time_created: datetime
     time_updated: t.Optional[datetime]
 

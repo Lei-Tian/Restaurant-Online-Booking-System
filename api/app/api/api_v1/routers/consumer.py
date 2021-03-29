@@ -6,12 +6,14 @@ from app.api.api_v1.crud import consumer
 from app.api.api_v1.schemas.consumer import (
     ConfirmOrderIn,
     LocationRestaurantCount,
+    OrderInfoOut,
+    OrderItem,
     SearchIn,
     SearchOut,
     SelectTableIn,
 )
-from app.api.api_v1.schemas.restaurant import OrderItem
 from app.core.auth import get_current_active_user
+from app.db.models.restaurant import Order, Restaurant
 from app.db.session import get_db
 from app.utils.crud import get_all_locations, get_popular_restaurants
 from app.utils.pagination import Page
@@ -39,6 +41,13 @@ async def location_restaurants_count(request: Request):
     Find all locations and their restaurants count
     """
     return consumer.get_location_restaurants_count(request, request.state.db)
+
+
+@r.get("/order-info", response_model=OrderInfoOut)
+async def get_order_info(request: Request, order_ref_id: str):
+    order = request.state.db.query(Order).filter(Order.ref_id == order_ref_id).first()
+    restaurant = request.state.db.query(Restaurant).filter(Restaurant.id == order.restaurant_id).first()
+    return OrderInfoOut(**{**order.__dict__, 'restaurant_name': restaurant.name})
 
 
 @r.post("/search", response_model=Page[SearchOut])

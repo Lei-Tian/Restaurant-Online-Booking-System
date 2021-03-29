@@ -81,8 +81,10 @@ class Order(Base):
 
     # columns
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("user.id", ondelete="SET NULL"))
     ref_id = Column(UUID(as_uuid=True), unique=True, default=uuid.uuid4)
+    user_id = Column(Integer, ForeignKey("user.id", ondelete="SET NULL"))
+    restaurant_id = Column(Integer, ForeignKey("restaurant.id", ondelete="SET NULL"))
+    booking_time = Column(DateTime)
     status = Column(Enum(OrderStatus))
     party_size = Column(Integer)
     time_created = Column(DateTime(timezone=True), server_default=func.now())

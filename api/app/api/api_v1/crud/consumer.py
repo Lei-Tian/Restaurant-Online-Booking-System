@@ -102,8 +102,14 @@ def select_table(request: Request, db: Session, select_table_params: SelectTable
     STEP3: let's say restaurant_table_id=6 is available at 17:00, then go to "no matched row" code block
     """
     # create an order
-    order_data = {'user_id': request.state.current_active_user.id, 'status': OrderStatus.pending, 'party_size': select_table_params.party_size} 
-
+    order_data = {
+        'user_id': request.state.current_active_user.id,
+        'restaurant_id': select_table_params.restaurant_id,
+        'status': OrderStatus.pending,
+        'party_size': select_table_params.party_size,
+        'booking_time': select_table_params.booking_time,
+    } 
+    order = crud_utils.create_item(db, model=Order, payload=order_data)
     # TODO: implement below
     # STEP1
     # STEP2
