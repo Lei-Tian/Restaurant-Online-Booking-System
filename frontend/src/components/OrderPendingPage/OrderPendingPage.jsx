@@ -11,7 +11,7 @@ import PeopleIcon from '@material-ui/icons/PeopleOutlined';
 import TimeIcon from '@material-ui/icons/ScheduleOutlined';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { axios_instance, history } from '../../_helpers';
+import { axios_instance } from '../../_helpers';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -75,15 +75,26 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function BookingPage(props) {
+function OrderPendingPage(props) {
     const classes = useStyles();
-    const [counter, setCounter] = useState(600);
-    const restaurantName = props.location.state.restaurantInfo.name;
     const user = useSelector((state) => state.authentication.user);
-    const partySize = props.location.state.selectTablePayload.party_size;
-    const bookTime = new Date(
-        props.location.state.selectTablePayload.booking_time,
-    );
+    const [counter, setCounter] = useState(600);
+    const [bookTime, setBookTime] = useState();
+    const [partySize, setPartySize] = useState();
+    const [restaurantName, setRestaurantName] = useState();
+
+    useEffect(() => {
+        const refId = props.location.pathname.split('/').slice(-1)[0];
+        (async () => {
+            const ret = await axios_instance.get(
+                `/consumer/order-info?order_ref_id=${refId}`,
+            );
+            debugger;
+            setBookTime(new Date(ret.data.booking_time));
+            setPartySize(ret.data.party_size);
+            setRestaurantName(ret.data.restaurant_name);
+        })();
+    }, [props.location.pathname]);
 
     useEffect(() => {
         const timer =
@@ -92,16 +103,15 @@ function BookingPage(props) {
     }, [counter]);
 
     useEffect(() => {
-        if (counter <= 0) history.push('/');
+        if (counter <= 0) props.history.push('/');
     }, [counter]);
 
     const handleComplete = () => {
         (async () => {
-            const ret = await axios_instance.post(
-                '/consumer/select-table',
-                props.location.state.selectTablePayload,
-            );
-            history.push(`/order-confirmation/${ret.data.ref_id}`);
+            const ret = await axios_instance.post('/consumer/order', {
+                ref_id: '',
+            });
+            props.history.push(`/order-complete/${ret.data.ref_id}`);
         })();
     };
 
@@ -127,7 +137,7 @@ function BookingPage(props) {
                         </Grid>
                         <Grid item>
                             <div className={classes.infoItem}>
-                                {bookTime.toLocaleDateString()}
+                                {bookTime && bookTime.toLocaleDateString()}
                             </div>
                         </Grid>
                     </Grid>
@@ -137,7 +147,7 @@ function BookingPage(props) {
                         </Grid>
                         <Grid item>
                             <div className={classes.infoItem}>
-                                {bookTime.toLocaleTimeString()}
+                                {bookTime && bookTime.toLocaleTimeString()}
                             </div>
                         </Grid>
                     </Grid>
@@ -185,4 +195,4 @@ function BookingPage(props) {
     );
 }
 
-export { BookingPage };
+export { OrderPendingPage };

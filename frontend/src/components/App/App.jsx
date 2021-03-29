@@ -4,9 +4,9 @@ import React from 'react';
 import { Redirect, Route, Router, Switch } from 'react-router-dom';
 import { PrivateRoute } from '../../_components';
 import { history } from '../../_helpers';
-import { BookingPage } from '../BookingPage';
 import { Nav } from '../Nav';
-import { OrderConfirmationPage } from '../OrderConfirmationPage';
+import { OrderCompletePage } from '../OrderCompletePage';
+import { OrderPendingPage } from '../OrderPendingPage';
 import { OrdersPage } from '../OrdersPage';
 import { Profile } from '../Profile';
 import { SearchPage } from '../SearchPage';
@@ -42,10 +42,13 @@ function App() {
                         <PrivateRoute path="/orders" component={OrdersPage} />
                         <PrivateRoute path="/profile" component={Profile} />
                         <PrivateRoute
-                            path="/order-confirmation"
-                            component={OrderConfirmationPage}
+                            path="/order-complete"
+                            component={OrderCompletePage}
                         />
-                        <PrivateRoute path="/booking" component={BookingPage} />
+                        <PrivateRoute
+                            path="/order-pending"
+                            component={OrderPendingPage}
+                        />
                         <Redirect from="*" to="/" />
                     </Switch>
                 </main>

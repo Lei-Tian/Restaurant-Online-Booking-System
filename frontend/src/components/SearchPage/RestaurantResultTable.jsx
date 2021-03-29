@@ -2,8 +2,7 @@ import { Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { DataGrid } from '@material-ui/data-grid';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { axios_instance } from '../../_helpers';
+import { axios_instance, history } from '../../_helpers';
 
 const limit = 10;
 const columns = [
@@ -17,37 +16,37 @@ const columns = [
         headerName: 'Windows',
         width: 300,
         renderCell: (params) => {
+            const handleSubmit = (e) => {
+                const payload = {
+                    booking_time: e.currentTarget.value,
+                    restaurant_id: params.row.id,
+                    party_size: params.row.party_size,
+                    table_type: 'GENERAL',
+                };
+                (async () => {
+                    const ret = await axios_instance.post(
+                        '/consumer/select-table',
+                        payload,
+                    );
+                    history.push(`/order-pending/${ret.data.ref_id}`);
+                })();
+            };
+
             return (
                 <div>
                     {params.value.map((datetime, index) => {
                         return (
-                            <Link
-                                to={{
-                                    pathname: '/booking',
-                                    state: {
-                                        selectTablePayload: {
-                                            booking_time: datetime,
-                                            restaurant_id: params.row.id,
-                                            party_size: params.row.party_size,
-                                            table_type: 'GENERAL',
-                                        },
-                                        restaurantInfo: {
-                                            name: params.row.name,
-                                            address: params.row.address,
-                                        },
-                                    },
-                                }}
-                                style={{ textDecoration: 'none' }}
+                            <Button
+                                key={index}
+                                variant="contained"
+                                color="primary"
+                                size="small"
+                                style={{ marginLeft: 16 }}
+                                value={datetime}
+                                onClick={handleSubmit}
                             >
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    size="small"
-                                    style={{ marginLeft: 16 }}
-                                >
-                                    {datetime.slice(11, 16)}
-                                </Button>
-                            </Link>
+                                {datetime.slice(11, 16)}
+                            </Button>
                         );
                     })}
                 </div>
