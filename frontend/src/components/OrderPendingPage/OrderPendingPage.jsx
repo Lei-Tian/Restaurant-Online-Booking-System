@@ -79,17 +79,18 @@ function OrderPendingPage(props) {
     const classes = useStyles();
     const user = useSelector((state) => state.authentication.user);
     const [counter, setCounter] = useState(600);
+    const [orderRefId, setOrderRefId] = useState();
     const [bookTime, setBookTime] = useState();
     const [partySize, setPartySize] = useState();
     const [restaurantName, setRestaurantName] = useState();
 
     useEffect(() => {
         const refId = props.location.pathname.split('/').slice(-1)[0];
+        setOrderRefId(refId);
         (async () => {
             const ret = await axios_instance.get(
                 `/consumer/order-info?order_ref_id=${refId}`,
             );
-            debugger;
             setBookTime(new Date(ret.data.booking_time));
             setPartySize(ret.data.party_size);
             setRestaurantName(ret.data.restaurant_name);
@@ -109,7 +110,7 @@ function OrderPendingPage(props) {
     const handleComplete = () => {
         (async () => {
             const ret = await axios_instance.post('/consumer/order', {
-                ref_id: '',
+                ref_id: orderRefId,
             });
             props.history.push(`/order-complete/${ret.data.ref_id}`);
         })();

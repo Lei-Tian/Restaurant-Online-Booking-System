@@ -1,6 +1,6 @@
 import typing as t
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 
 from app.api.api_v1.crud import consumer
 from app.api.api_v1.schemas.consumer import (
@@ -46,6 +46,7 @@ async def location_restaurants_count(request: Request):
 @r.get("/order-info", response_model=OrderInfoOut)
 async def get_order_info(request: Request, order_ref_id: str):
     order = request.state.db.query(Order).filter(Order.ref_id == order_ref_id).first()
+    if not order: return HTTPException(status=404, detail=f"order_ref_id={order_ref_id} not found")
     restaurant = request.state.db.query(Restaurant).filter(Restaurant.id == order.restaurant_id).first()
     return OrderInfoOut(**{**order.__dict__, 'restaurant_name': restaurant.name})
 
