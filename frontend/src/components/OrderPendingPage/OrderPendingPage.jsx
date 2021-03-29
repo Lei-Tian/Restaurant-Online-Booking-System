@@ -109,7 +109,7 @@ function OrderPendingPage(props) {
 
     const handleComplete = () => {
         (async () => {
-            const ret = await axios_instance.post('/consumer/order', {
+            const ret = await axios_instance.post('/consumer/confirm-order', {
                 ref_id: orderRefId,
             });
             props.history.push(`/order-complete/${ret.data.ref_id}`);

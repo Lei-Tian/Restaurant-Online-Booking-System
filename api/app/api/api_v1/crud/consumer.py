@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 from app import tasks
 from app.api.api_v1.schemas.consumer import (
     ConfirmOrderIn,
-    CancelOrderIn,
     LocationRestaurantCount,
     SearchIn,
     SearchOut,
@@ -132,12 +131,4 @@ def confirm_order(request: Request, db: Session, confirm_order_params: ConfirmOr
     # cancel the execution of cancel_order task
     celery_app.control.revoke(confirm_order_params.ref_id)
     logger.info(f"cancel_order task({confirm_order_params.ref_id}) has been revoked")
-    return order
-
-
-def cancel_order(request: Request, db: Session, cancel_order_params: CancelOrderIn) -> OrderItem:
-    # update order status
-    db.execute(f"UPDATE public.order SET status = '{OrderStatus.cancelled.value.lower()}' where ref_id = '{cancel_order_params.ref_id}'")
-    db.commit()
-    order = db.query(Order).filter(Order.ref_id == cancel_order_params.ref_id).first()
     return order

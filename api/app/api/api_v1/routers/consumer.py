@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 
 from app.api.api_v1.crud import consumer
 from app.api.api_v1.schemas.consumer import (
-    ConfirmOrderIn,
     CancelOrderIn,
+    ConfirmOrderIn,
     LocationRestaurantCount,
     OrderInfoOut,
     OrderItem,
@@ -16,6 +16,7 @@ from app.api.api_v1.schemas.consumer import (
 from app.core.auth import get_current_active_user
 from app.db.models.restaurant import Order, Restaurant
 from app.db.session import get_db
+from app.tasks import cancel_order
 from app.utils.crud import get_all_locations, get_popular_restaurants
 from app.utils.pagination import Page
 
@@ -87,8 +88,8 @@ async def select_table(
     return consumer.select_table(request, request.state.db, select_table_params)
 
 
-@r.post("/order", response_model=OrderItem)
-async def confirm_order(
+@r.post("/confirm-order", response_model=OrderItem)
+async def confirm_an_order(
     request: Request,
     order_in: ConfirmOrderIn,
 ):
@@ -99,11 +100,12 @@ async def confirm_order(
 
 
 @r.post("/cancel-order", response_model=OrderItem)
-async def cancel_order(
+async def cancel_an_order(
     request: Request,
     order_in: CancelOrderIn,
 ):
     """
     Cancel an order
     """
-    return consumer.cancel_order(request, request.state.db, order_in)
+    cancel_order(order_in.ref_id)
+    return request.state.db.query(Order).filter(Order.ref_id == order_in.ref_id).first()
