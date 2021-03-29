@@ -12,8 +12,16 @@ class LocationRestaurantCount(LocationBase):
     restaurant_count: int
 
 
-class ConfirmOrderIn(BaseModel):
+class OrderActionIn(BaseModel):
     ref_id: str
+
+
+class ConfirmOrderIn(OrderActionIn):
+    pass
+
+
+class CancelOrderIn(OrderActionIn):
+    pass
 
 
 class SearchIn(BaseModel):

@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from app.api.api_v1.crud import consumer
 from app.api.api_v1.schemas.consumer import (
     ConfirmOrderIn,
+    CancelOrderIn,
     LocationRestaurantCount,
     OrderInfoOut,
     OrderItem,
@@ -51,6 +52,17 @@ async def get_order_info(request: Request, order_ref_id: str):
     return OrderInfoOut(**{**order.__dict__, 'restaurant_name': restaurant.name})
 
 
+@r.get("/order-history", response_model=t.List[OrderInfoOut])
+async def get_order_history(request: Request):
+    orders = request.state.db.query(Order).filter(Order.user_id == request.state.current_active_user.id).all()
+    if not orders: return []
+    ret = []
+    for order in orders:
+        restaurant = request.state.db.query(Restaurant).filter(Restaurant.id == order.restaurant_id).first()
+        ret.append(OrderInfoOut(**{**order.__dict__, 'restaurant_name': restaurant.name}))
+    return ret
+
+
 @r.post("/search", response_model=Page[SearchOut])
 async def search_restaurant_tables(
     request: Request,
@@ -84,3 +96,14 @@ async def confirm_order(
     Confirm an order
     """
     return consumer.confirm_order(request, request.state.db, order_in)
+
+
+@r.post("/cancel-order", response_model=OrderItem)
+async def cancel_order(
+    request: Request,
+    order_in: CancelOrderIn,
+):
+    """
+    Cancel an order
+    """
+    return consumer.cancel_order(request, request.state.db, order_in)
