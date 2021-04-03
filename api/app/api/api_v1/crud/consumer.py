@@ -102,6 +102,7 @@ def select_table(request: Request, db: Session, select_table_params: SelectTable
     STEP3: let's say restaurant_table_id=6 is available at 17:00, then go to "no matched row" code block
     """
     # create an order
+    print("START")
     order_data = {
         'user_id': request.state.current_active_user.id,
         'restaurant_id': select_table_params.restaurant_id,
@@ -115,7 +116,40 @@ def select_table(request: Request, db: Session, select_table_params: SelectTable
     # STEP2
     # STEP3
     # implement end
+    get_table_sql = f"select id from restaurant_table where restaurant_id = '{select_table_params.restaurant_id}'"
+    table_id_fetch = db.execute(get_table_sql).fetchall()
+    table_id = [item[0] for item in table_id_fetch]
+    table_sql = "("
+    for i in range(len(table_id)):
+        if i == len(table_id) - 1:
+            table_sql = table_sql + str(table_id[i]) + ")"
+        else:
+            table_sql = table_sql + str(table_id[i]) + ", "
+    table_id_list = str()
+    available_sql = f"select restaurant_table_id, is_available from table_availability where booking_time = '{select_table_params.booking_time}' and restaurant_table_id in " + table_sql + " FOR UPDATE"
 
+    available_table_fetch = db.execute(available_sql).fetchall()
+    table_id2 = list()
+    f = 0
+
+    for i in range(len(available_table_fetch)):
+
+        table_id_element, availability = available_table_fetch[i]
+        table_id2.append(table_id_element)
+        if availability:
+            update_sql = f"UPDATE table_availability, SET is_available = FALSE WHERE booking_time = '{select_table_params.booking_time}' AND restaurant_table_id = '{table_id_element}'"
+            db.execute(update_sql)
+            db.commit()
+            f = 1
+            break
+
+    if f == 0:
+        unshown_table = [x for x in table_id if x not in table_id2]
+        if len(unshown_table) > 0:
+            insert_sql = f"INSERT INTO table_availability (restaurant_table_id, order_id, booking_time, is_available) VALUES ('{unshown_table[0]}', '{order.id}', '{order.booking_time}', FALSE)"
+            db.execute(insert_sql)
+        else:
+            raise HTTPException(status_code=404, detail="All booked")
     # order will be auto cancelled in 5min
     countdown_in_sec = 60 * 5
     tasks.cancel_order.apply_async(args=(order.ref_id,), countdown=countdown_in_sec, task_id=order.ref_id)
