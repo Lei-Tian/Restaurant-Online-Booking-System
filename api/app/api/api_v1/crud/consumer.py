@@ -116,9 +116,15 @@ def select_table(request: Request, db: Session, select_table_params: SelectTable
     # STEP2
     # STEP3
     # implement end
+
+    # get table id from restaurant_table based on restaurant_id
     get_table_sql = f"select id from restaurant_table where restaurant_id = '{select_table_params.restaurant_id}'"
     table_id_fetch = db.execute(get_table_sql).fetchall()
+
+    # get a list of table ids
     table_id = [item[0] for item in table_id_fetch]
+
+    # convert table id python list into sql list
     table_sql = "("
     for i in range(len(table_id)):
         if i == len(table_id) - 1:
@@ -129,13 +135,19 @@ def select_table(request: Request, db: Session, select_table_params: SelectTable
     available_sql = f"select restaurant_table_id, is_available from table_availability where booking_time = '{select_table_params.booking_time}' and restaurant_table_id in " + table_sql + " FOR UPDATE"
 
     available_table_fetch = db.execute(available_sql).fetchall()
+
+    #table_id2 is for storing table id table_availability based on booking_time
     table_id2 = list()
+
+    #f is to indicate whether available table is found in table_availability
     f = 0
 
     for i in range(len(available_table_fetch)):
 
         table_id_element, availability = available_table_fetch[i]
         table_id2.append(table_id_element)
+
+        # if available table found, update row in table_availability
         if availability:
             update_sql = f"UPDATE table_availability, SET is_available = FALSE WHERE booking_time = '{select_table_params.booking_time}' AND restaurant_table_id = '{table_id_element}'"
             db.execute(update_sql)
@@ -143,12 +155,15 @@ def select_table(request: Request, db: Session, select_table_params: SelectTable
             f = 1
             break
 
+    # if no available table found
     if f == 0:
         unshown_table = [x for x in table_id if x not in table_id2]
+        # if it's because table_id was not found in table_availability
         if len(unshown_table) > 0:
             insert_sql = f"INSERT INTO table_availability (restaurant_table_id, order_id, booking_time, is_available) VALUES ('{unshown_table[0]}', '{order.id}', '{order.booking_time}', FALSE)"
             db.execute(insert_sql)
             db.commit()
+        # if it's because tables are all booked
         else:
             db.commit()
             raise HTTPException(status_code=404, detail="All booked")
