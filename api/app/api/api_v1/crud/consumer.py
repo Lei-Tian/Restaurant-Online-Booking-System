@@ -148,7 +148,9 @@ def select_table(request: Request, db: Session, select_table_params: SelectTable
         if len(unshown_table) > 0:
             insert_sql = f"INSERT INTO table_availability (restaurant_table_id, order_id, booking_time, is_available) VALUES ('{unshown_table[0]}', '{order.id}', '{order.booking_time}', FALSE)"
             db.execute(insert_sql)
+            db.commit()
         else:
+            db.commit()
             raise HTTPException(status_code=404, detail="All booked")
     # order will be auto cancelled in 5min
     countdown_in_sec = 60 * 5
