@@ -44,6 +44,7 @@ def search_restaurant_tables(request: Request, db: Session, current_usersearch_p
     results = []
     # step2: utils.crud.get_popular_restaurants(location_id) -> popular_restaurants(a list of restaurant_id) estimate 1200+
     popular_restaurants = crud_utils.get_popular_restaurants(location_id)
+    logger.info(f"{len(popular_restaurants)} popular restaurants are found in total.")
     # step3: iterate from restaurant_ids -> find 3 nearest available_windows for each restaurant_id (1100+)
     for restaurantID in popular_restaurants[offset:offset+limit]:
         # step 3.1: get the table ids of a popular restaurant
@@ -85,7 +86,7 @@ def search_restaurant_tables(request: Request, db: Session, current_usersearch_p
 def isValidSeachTime(searchTime):
     OPEN_HOUR = 10
     CLOSE_HOUR = 23
-    if searchTime < datetime.now().replace(tzinfo=timezone.utc): return False
+    if searchTime.hour <= datetime.now().hour: return False
     if searchTime.hour > CLOSE_HOUR or searchTime.hour < OPEN_HOUR: return False
     return True
 
