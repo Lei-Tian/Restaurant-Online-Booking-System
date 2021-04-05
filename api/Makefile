@@ -20,6 +20,9 @@ rollback:
 migration:
 	alembic revision --autogenerate -m "${MESSAGE}"
 
+empty_migration:
+	alembic revision -m "${MESSAGE}"
+
 initdata:
 	python3 scripts/initial_data.py
 

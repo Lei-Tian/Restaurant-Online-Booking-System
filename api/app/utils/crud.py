@@ -55,7 +55,7 @@ def delete_item(db: Session, model: Base, _id: int):
     return db_item
 
 
-def get_all_locations(is_open: bool=True) -> t.List[dict]:
+def get_all_locations() -> t.List[dict]:
     locations = redis_client.get(constants.ALL_LOCATIONS)
     if locations:
         logger.info("locations are loaded from cache")
@@ -63,7 +63,8 @@ def get_all_locations(is_open: bool=True) -> t.List[dict]:
     else:
         locations = []
         with get_session() as db:
-            rows = db.execute(f"SELECT DISTINCT location_id, city, state, country FROM restaurant, location where location_id = location.id AND is_open = {is_open}").fetchall()
+            rows = db.execute(f"SELECT * FROM all_open_locations").fetchall()
+            logger.info("locations are loaded from db")
             for _id, city, state, country in rows:
                 locations.append({"id": _id, "city": city, "state": state, "country": country})
             redis_client.set(constants.ALL_LOCATIONS, json.dumps(locations), 60 * 60)
