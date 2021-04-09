@@ -121,7 +121,7 @@ function SearchPage() {
         const searchDate = `${selectedDate.toISOString().slice(0, 10)}`;
         let searchTime = parseInt(selectedTime.split(' ')[0]);
         if (selectedTime.includes('PM')) searchTime += 12;
-        const searchDateTime = `${searchDate}T${searchTime}:00:00.000Z`;
+        const searchDateTime = `${searchDate}T${searchTime}:00:00`;
         const payload = {
             country,
             state,
