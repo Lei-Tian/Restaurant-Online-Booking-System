@@ -39,9 +39,7 @@ class Restaurant(Base):
     # relationships
     location = relationship("Location", backref="restaurants")
 
-    __table_args__ = (
-        CheckConstraint("star >= 0 AND star <= 5", name='check_star_value'),
-    )
+    __table_args__ = (CheckConstraint("star >= 0 AND star <= 5", name="check_star_value"),)
 
 
 class RestaurantTableType(enum.Enum):
@@ -64,9 +62,7 @@ class RestaurantTable(Base):
     # relationships
     restaurant = relationship("Restaurant", backref="restaurant_tables")
 
-    __table_args__ = (
-        CheckConstraint(capacity > 0, name='check_table_capacity_value'),
-    )
+    __table_args__ = (CheckConstraint(capacity > 0, name="check_table_capacity_value"),)
 
 
 class OrderStatus(enum.Enum):
@@ -93,9 +89,7 @@ class Order(Base):
     # relationships
     user = relationship("User", backref="orders")
 
-    __table_args__ = (
-        CheckConstraint(party_size > 0, name='check_table_party_size_value'),
-    )
+    __table_args__ = (CheckConstraint(party_size > 0, name="check_table_party_size_value"),)
 
 
 @generic_repr
@@ -106,7 +100,7 @@ class TableAvailability(Base):
     id = Column(Integer, primary_key=True, index=True)
     restaurant_table_id = Column(Integer, ForeignKey("restaurant_table.id", ondelete="CASCADE"))
     order_id = Column(Integer, ForeignKey("order.id", ondelete="SET NULL"))
-    booking_time = Column(DateTime(timezone=True))
+    booking_time = Column(DateTime)
     is_available = Column(Boolean)
 
     # relationships

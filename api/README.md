@@ -11,7 +11,7 @@
 
 ## DB Migration Management
 
-- To create an empty migration script: `make empty migration MESSAGE=<description>`
+- To create an empty migration script: `make empty_migration MESSAGE=<description>`
 - To autogenerate migration script: `make migration MESSAGE=<description>`
 - To migrate: `make migrate`
 - To rollback: `make rollback`
