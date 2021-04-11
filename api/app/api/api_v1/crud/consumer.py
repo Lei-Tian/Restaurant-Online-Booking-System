@@ -37,6 +37,16 @@ def get_location_restaurants_count(request: Request, db: Session) -> t.List[Loca
     return result
 
 
+def isValidSeachTime(searchTime):
+    OPEN_HOUR = 10
+    CLOSE_HOUR = 23
+    if searchTime <= datetime.now():
+        return False
+    if searchTime.hour > CLOSE_HOUR or searchTime.hour < OPEN_HOUR:
+        return False
+    return True
+
+
 def search_restaurant_tables(
     request: Request, db: Session, current_usersearch_params: SearchIn, offset: int, limit: int
 ) -> Page[SearchOut]:
@@ -99,16 +109,6 @@ def search_restaurant_tables(
     )
 
 
-def isValidSeachTime(searchTime):
-    OPEN_HOUR = 10
-    CLOSE_HOUR = 23
-    if searchTime <= datetime.now():
-        return False
-    if searchTime.hour > CLOSE_HOUR or searchTime.hour < OPEN_HOUR:
-        return False
-    return True
-
-
 def select_table(request: Request, db: Session, select_table_params: SelectTableIn) -> OrderItem:
     """To reserve a table by a given available_window
     Given available_window,
@@ -163,8 +163,8 @@ def select_table(request: Request, db: Session, select_table_params: SelectTable
         # if it's because tables are all booked
     else:
         raise HTTPException(status_code=404, detail="All booked")
-    # order will be auto cancelled in 5min
-    countdown_in_sec = 60 * 5
+    # order will be auto cancelled in 10min
+    countdown_in_sec = 60 * 10
     tasks.cancel_order.apply_async(args=(order.ref_id,), countdown=countdown_in_sec, task_id=order.ref_id)
     logger.info(f"cancel order task({order.ref_id}) has been scheduled in {countdown_in_sec}sec")
     return order
