@@ -21,11 +21,8 @@ def greeting(words: str):
 def cancel_order(order_ref_id: str):
     logger.info(f"Cancelling order(ref_id={order_ref_id})")
     with get_session() as db:
-        # order to cancelled status
+        # order to cancelled status, then sql trigger delete_cancel_order_tables will be executed to delete table_availability rows
         db.execute(f"UPDATE public.order SET status = '{OrderStatus.cancelled.value.lower()}' WHERE ref_id = '{order_ref_id}'")
-        db.commit()
-        # delete associated table_availability
-        db.execute(f"DELETE FROM table_availability WHERE order_id IN (SELECT id FROM public.order WHERE ref_id = '{order_ref_id}')")
         db.commit()
     logger.info(f"Order(id={order_ref_id}) has been cancelled")
 
@@ -35,11 +32,13 @@ def update_popular_restaurants():
     logger.info("refreshing popular restaurants...")
     with get_session() as db:
         for location in get_all_locations():
-            location_id = location['id']
+            location_id = location["id"]
             key = f"{constants.POPULAR_RESTAURANTS_PER_LOCATION_PREFIX}{location_id}"
             logger.info(f"updating popular restaurants(key={key}) to cache...")
-            rows = db.execute(f"SELECT id FROM restaurant where is_open = true AND location_id = {location_id} ORDER BY star DESC").fetchall()
+            rows = db.execute(
+                f"SELECT id FROM restaurant where is_open = true AND location_id = {location_id} ORDER BY star DESC"
+            ).fetchall()
             restaurant_ids = [row[0] for row in rows]
-            redis_client.set(key, json.dumps(restaurant_ids),  60 * 60)
+            redis_client.set(key, json.dumps(restaurant_ids), 60 * 60)
             logger.info(f"updated restaurants with count={len(restaurant_ids)}")
     logger.info(f"update popular restaurants is complete!")
