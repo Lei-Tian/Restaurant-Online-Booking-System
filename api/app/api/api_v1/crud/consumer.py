@@ -157,8 +157,10 @@ def select_table(request: Request, db: Session, select_table_params: SelectTable
     # unshown_table indicates table_id not found in table_availability
     unshown_table = [x for x in table_id if x not in table_id2]
     if len(unshown_table) > 0:
-        insert_sql = f"INSERT INTO table_availability (restaurant_table_id, order_id, booking_time, is_available) VALUES ('{unshown_table[0]}', '{order.id}', '{order.booking_time}', FALSE)"
-        db.execute(insert_sql)
+        transaction_sql = '''BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+                            INSERT INTO table_availability (restaurant_table_id, order_id, booking_time, is_available) VALUES ('{}', '{}', '{}', FALSE);
+                            COMMIT;'''.format(unshown_table[0], order.id, order.booking_time)
+        db.execute(transaction_sql)
         db.commit()
         # if it's because tables are all booked
     else:
