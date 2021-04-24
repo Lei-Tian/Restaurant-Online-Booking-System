@@ -1,6 +1,6 @@
 import logging
 import typing as t
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
 from fastapi import HTTPException, Request
 from sqlalchemy.orm import Session
@@ -13,9 +13,9 @@ from app.api.api_v1.schemas.consumer import (
     SearchOut,
     SelectTableIn,
 )
-from app.api.api_v1.schemas.restaurant import OrderItem, TableAvailabilityItem
+from app.api.api_v1.schemas.restaurant import OrderItem
 from app.core.celery_app import celery_app
-from app.db.models.restaurant import Order, OrderStatus, TableAvailability
+from app.db.models.restaurant import Order, OrderStatus
 from app.utils import crud as crud_utils
 from app.utils.pagination import (
     Page,
@@ -157,9 +157,11 @@ def select_table(request: Request, db: Session, select_table_params: SelectTable
     # unshown_table indicates table_id not found in table_availability
     unshown_table = [x for x in table_id if x not in table_id2]
     if len(unshown_table) > 0:
-        transaction_sql = '''BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+        transaction_sql = """BEGIN TRANSACTION;
                             INSERT INTO table_availability (restaurant_table_id, order_id, booking_time, is_available) VALUES ('{}', '{}', '{}', FALSE);
-                            COMMIT;'''.format(unshown_table[0], order.id, order.booking_time)
+                            COMMIT;""".format(
+            unshown_table[0], order.id, order.booking_time
+        )
         db.execute(transaction_sql)
         db.commit()
         # if it's because tables are all booked
@@ -175,7 +177,9 @@ def select_table(request: Request, db: Session, select_table_params: SelectTable
 def confirm_order(request: Request, db: Session, confirm_order_params: ConfirmOrderIn) -> OrderItem:
     # update order status
     db.execute(
-        f"UPDATE public.order SET status = '{OrderStatus.complete.value.lower()}' where ref_id = '{confirm_order_params.ref_id}'"
+        f"""
+        CALL update_order_status('{OrderStatus.complete.value.lower()}', '{confirm_order_params.ref_id}')
+    """
     )
     db.commit()
     order = db.query(Order).filter(Order.ref_id == confirm_order_params.ref_id).first()
